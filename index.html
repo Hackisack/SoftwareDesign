@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="public/app.js"></script>
+    <link rel="stylesheet" href="index.css">
+
+    <title>ERCMSystem</title>
+</head>
+
+<body id="body">
+
+    <h1>Welcome to our ERCM System</h1>
+
+    <h3>Please provide your Login Information</h3>
+
+    <br>
+
+    <form id="form" onsubmit="return false">
+
+        <label for="Username">Username:</label><br>
+        <input type="text" name="Username" required /><br/><br>
+
+        <label for="Password">Password:</label><br>
+        <input autocomplete="on" type="password" name="Password" required /><br/><br>
+
+        <button id="submit">Login</button>
+    </form>
+
+    <br><br>
+
+    <div id="response"></div>
+
+
+</body>
+
+</html>
