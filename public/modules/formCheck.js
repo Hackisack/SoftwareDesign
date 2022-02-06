@@ -10,4 +10,10 @@ export function checkIfFormIsFilled(formData, length) {
     }
     return false;
 }
+export function checkIfOrderIsValid(amountData, allData, productNumber) {
+    if (amountData.Amount > allData[productNumber].MinBG && amountData.Amount < allData[productNumber].MaxBG && allData[productNumber].MEDate >= new Date()) {
+        return true;
+    }
+    return false;
+}
 //# sourceMappingURL=formCheck.js.map

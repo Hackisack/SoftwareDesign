@@ -36,3 +36,27 @@ export interface Product {
     DiscountBG: number;
     Discount: number;
 }
+
+export interface SearchTerm {
+    SearchTerm: string;
+    }
+
+export interface Customer {
+    ID: string;
+    Name: string;
+    Adress: string; 
+    Discount: number;
+    }
+
+export interface Order {
+    ID: string;
+    Description: string;
+    OrderDate: Date;
+    DeliveryDate: Date; 
+    Price: number;
+    OrderPositions: Product[];
+    }
+
+export interface Amount {
+    Amount: number;
+    }

@@ -52,7 +52,7 @@ Die Rolle des Benutzers:
 
 3. Der Benutzer kann neue Bestellungen erstellen bzw. bestehende bearbeiten und ebenso nach diesen anhand der ID oder der Bezeichnung suchen.
 
-  3.1. Eine Bestellung besteht aus einer eindeutigen ID, einem Bestelldatum, dem frühesten Lieferdatum, dem Bestellbetrag in €, dieser ergibt sich durch die Bestellpositionen und weiteren Aspekte, die wie folgt sind:
+  3.1. Eine Bestellung besteht aus einer eindeutigen ID, Beschreibung, einem Bestelldatum, dem frühesten Lieferdatum, dem Bestellbetrag in €, dieser ergibt sich durch die Bestellpositionen und weiteren Aspekte, die wie folgt sind:
   3.2. Eine Bestellung wird immer genau einem Kunden zugeordnet.
   3.3. Eine Bestellung besteht aus mehreren Bestellpositionen:
     3.3.1.  Eine Bestellposition besteht aus genau einem Artikel, der bestellten Menge (beachten von minimaler und maximaler Bestellgröße des Artikels), dem sich daraus ergebenen Bestellpositionsbetrag (Preis mal Menge)

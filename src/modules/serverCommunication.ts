@@ -1,5 +1,5 @@
 //Module Imports
-import { LoginData, Product, UserData } from "./interfaces.js";
+import { Customer, LoginData, Product, SearchTerm, UserData } from "./interfaces.js";
 
 
 
@@ -87,7 +87,7 @@ export async function changeAdminPrivilegesComm(username: string): Promise<strin
 
 export async function addProductComm(usableData: Product): Promise<boolean> {
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Funktioniert nicht manuell eintragen?
 
     fetchString.append("ID", usableData.ID);
     fetchString.append("Description", usableData.Description);
@@ -111,4 +111,125 @@ export async function addProductComm(usableData: Product): Promise<boolean> {
 
     if (answer == "true") { return true; }
     else return false;
+}
+
+export async function searchProductComm(usableData: SearchTerm): Promise<string> {
+
+    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+
+    fetchString.append("SearchTerm", usableData.SearchTerm);
+    fetchString.append("ServerId", "SearchProduct");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.text();
+    if (answer == null) {return "empty"; }
+    else return answer;
+}
+
+export async function addCustomerComm(usableData: Customer): Promise<boolean> {
+
+    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
+
+    fetchString.append("ID", usableData.ID);
+    fetchString.append("Name", usableData.Name);
+    fetchString.append("Adress", usableData.Adress);
+    fetchString.append("Discount", usableData.Discount.toString());
+    fetchString.append("ServerId", "CreateCustomer");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.text();
+
+    if (answer == "true") { return true; }
+    else return false;
+}
+
+export async function searchCustomerComm(usableData: SearchTerm): Promise<string> {
+
+    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+
+    fetchString.append("SearchTerm", usableData.SearchTerm);
+    fetchString.append("ServerId", "SearchCustomer");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.text();
+    if (answer == null) {return "empty"; }
+    else return answer;
+}
+
+export async function searchOrderComm(usableData: SearchTerm): Promise<string> {
+
+    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+
+    fetchString.append("SearchTerm", usableData.SearchTerm);
+    fetchString.append("ServerId", "SearchOrder");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.text();
+    if (answer == null) {return "empty"; }
+    else return answer;
+}
+
+export async function createOrderComm(usableData: Customer): Promise<boolean> {
+
+    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
+
+    fetchString.append("ID", usableData.ID);
+    fetchString.append("Name", usableData.Name);
+    fetchString.append("Adress", usableData.Adress);
+    fetchString.append("Discount", usableData.Discount.toString());
+    fetchString.append("ServerId", "CreateCustomer");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.text();
+
+    if (answer == "true") { return true; }
+    else return false;
+}
+
+export async function allProductDataComm(): Promise<string> {
+
+    let fetchString: URLSearchParams = new URLSearchParams();
+
+    fetchString.append("ServerId", "AllProduct");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.json();
+
+    return answer;
 }

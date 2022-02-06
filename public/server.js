@@ -12,6 +12,8 @@ import * as Http from "http";
 import * as Mongo from "mongodb";
 let databaseUser;
 let databaseProducts;
+let databaseCustomers;
+let databaseOrders;
 let port = Number(process.env.PORT);
 if (!port)
     port = 8100;
@@ -31,8 +33,12 @@ function connectToDatabase(_url) {
         yield mongoClient.connect();
         databaseUser = mongoClient.db("Data").collection("User");
         databaseProducts = mongoClient.db("Data").collection("Products");
-        console.log("CollectionOne connection ", databaseUser != undefined);
-        console.log("CollectionTwo connection ", databaseProducts != undefined);
+        databaseCustomers = mongoClient.db("Data").collection("Customers");
+        databaseOrders = mongoClient.db("Data").collection("Orders");
+        console.log("CollectionUser connection ", databaseUser != undefined);
+        console.log("CollectionProducts connection ", databaseProducts != undefined);
+        console.log("CollectionCustomers connection ", databaseCustomers != undefined);
+        console.log("CollectionOrders connection ", databaseOrders != undefined);
     });
 }
 function handleListen() {
@@ -90,6 +96,44 @@ function handleRequest(_request, _response) {
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield createProduct(usableData));
+                _response.end();
+            }
+            if (checkForId.ServerId == "SearchProduct") { //SearchProduct
+                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                delete usableData.ServerId;
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield searchProduct(usableData.SearchTerm));
+                _response.end();
+            }
+            if (checkForId.ServerId == "CreateCustomer") { //Check and create Product
+                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                delete usableData.ServerId;
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield createCustomer(usableData));
+                _response.end();
+            }
+            if (checkForId.ServerId == "SearchCustomer") { //SearchProduct
+                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                delete usableData.ServerId;
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield searchCustomer(usableData.SearchTerm));
+                _response.end();
+            }
+            if (checkForId.ServerId == "SearchOrder") { //SearchProduct
+                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                delete usableData.ServerId;
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield searchOrder(usableData.SearchTerm));
+                _response.end();
+            }
+            if (checkForId.ServerId == "AllProduct") { //Check and create User
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield retrieveAllProduct());
                 _response.end();
             }
         }));
@@ -168,6 +212,44 @@ function createProduct(usableData) {
         }
         yield databaseProducts.insertOne(usableData);
         return "true";
+    });
+}
+function searchProduct(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let foundProduct = yield databaseProducts.findOne({ $or: [{ "ID": usableData }, { "Description": usableData }] });
+        return JSON.stringify(foundProduct);
+    });
+}
+function createCustomer(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let allData = (yield databaseCustomers.find().toArray());
+        if (allData.length >= 1) {
+            for (let x = 0; x < allData.length; x++) {
+                if (allData[x].ID == usableData.ID) {
+                    return "false";
+                }
+            }
+        }
+        yield databaseCustomers.insertOne(usableData);
+        return "true";
+    });
+}
+function searchCustomer(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let foundCustomer = yield databaseCustomers.findOne({ $or: [{ "ID": usableData }, { "Name": usableData }] });
+        return JSON.stringify(foundCustomer);
+    });
+}
+function searchOrder(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let foundOrder = yield databaseOrders.findOne({ $or: [{ "ID": usableData }, { "Description": usableData }] });
+        return JSON.stringify(foundOrder);
+    });
+}
+function retrieveAllProduct() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let allData = yield databaseProducts.find({}).toArray();
+        return JSON.stringify(allData);
     });
 }
 //# sourceMappingURL=server.js.map

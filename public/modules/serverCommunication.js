@@ -72,7 +72,7 @@ export function changeAdminPrivilegesComm(username) {
 }
 export function addProductComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString());
+        let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Funktioniert nicht manuell eintragen?
         fetchString.append("ID", usableData.ID);
         fetchString.append("Description", usableData.Description);
         fetchString.append("MEDate", usableData.MEDate.toString());
@@ -93,6 +93,109 @@ export function addProductComm(usableData) {
         }
         else
             return false;
+    });
+}
+export function searchProductComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams(usableData.toString());
+        fetchString.append("SearchTerm", usableData.SearchTerm);
+        fetchString.append("ServerId", "SearchProduct");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.text();
+        if (answer == null) {
+            return "empty";
+        }
+        else
+            return answer;
+    });
+}
+export function addCustomerComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
+        fetchString.append("ID", usableData.ID);
+        fetchString.append("Name", usableData.Name);
+        fetchString.append("Adress", usableData.Adress);
+        fetchString.append("Discount", usableData.Discount.toString());
+        fetchString.append("ServerId", "CreateCustomer");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.text();
+        if (answer == "true") {
+            return true;
+        }
+        else
+            return false;
+    });
+}
+export function searchCustomerComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams(usableData.toString());
+        fetchString.append("SearchTerm", usableData.SearchTerm);
+        fetchString.append("ServerId", "SearchCustomer");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.text();
+        if (answer == null) {
+            return "empty";
+        }
+        else
+            return answer;
+    });
+}
+export function searchOrderComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams(usableData.toString());
+        fetchString.append("SearchTerm", usableData.SearchTerm);
+        fetchString.append("ServerId", "SearchOrder");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.text();
+        if (answer == null) {
+            return "empty";
+        }
+        else
+            return answer;
+    });
+}
+export function createOrderComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
+        fetchString.append("ID", usableData.ID);
+        fetchString.append("Name", usableData.Name);
+        fetchString.append("Adress", usableData.Adress);
+        fetchString.append("Discount", usableData.Discount.toString());
+        fetchString.append("ServerId", "CreateCustomer");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.text();
+        if (answer == "true") {
+            return true;
+        }
+        else
+            return false;
+    });
+}
+export function allProductDataComm() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams();
+        fetchString.append("ServerId", "AllProduct");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.json();
+        return answer;
     });
 }
 //# sourceMappingURL=serverCommunication.js.map
