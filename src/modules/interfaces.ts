@@ -54,7 +54,7 @@ export interface Order {
     OrderDate: Date;
     DeliveryDate: Date; 
     Price: number;
-    OrderPositions: Product[];
+    OrderPositions: [[Product, Amount]];
     }
 
 export interface Amount {

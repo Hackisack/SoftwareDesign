@@ -10,6 +10,7 @@ let body: HTMLElement = <HTMLElement>document.getElementById("body");
 //variables
 let adminPrivileges: boolean = false;
 let reloadUsableData: LoginData;
+let firstPush: number = 1;
 
 export async function startBuilding(usableData: LoginData, reload?: string): Promise<void> {
     reloadUsableData = usableData;
@@ -454,7 +455,7 @@ function searchOrder(): void {
 }
 
 
-async function createOrder(step: string): Promise<void> {
+async function createOrder(step: string, order?: Order): Promise<void> {
 
     //Grab HTML Elements before insertion
     let changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
@@ -473,13 +474,12 @@ async function createOrder(step: string): Promise<void> {
 
             let formData: FormData = new FormData(form);
 
-            if (checkIfFormIsFilled(formData, 3) == true) {
+            if (checkIfFormIsFilled(formData, 2) == true) {
 
                 let formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
-                let usableData: Order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                sessionStorage.setItem("savedData", JSON.stringify(usableData));
+                let order: Order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
 
-                createOrder("two");
+                createOrder("two", order);
 
             }
 
@@ -492,6 +492,18 @@ async function createOrder(step: string): Promise<void> {
        
 
         changeSite.innerHTML = htmlCodeStrings.tableHeaderCreateOrder;
+
+        let submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
+
+        submit.addEventListener("click",async function (): Promise<void> {
+
+            if(sessionStorage.getItem("order") != undefined) {
+
+                confirmOrderOverview();
+
+            }
+
+        });
 
         let productData: Product[] = JSON.parse(JSON.stringify((await allProductDataComm())).replace(/%2B/g, " "));
 
@@ -535,6 +547,9 @@ async function createOrder(step: string): Promise<void> {
 
             let amount: HTMLCollectionOf<HTMLFormElement> = <HTMLCollectionOf<HTMLFormElement>>document.getElementsByClassName("amount");
             let button: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>>document.getElementsByClassName("addButton");
+            let amountField: HTMLCollectionOf<HTMLInputElement> = <HTMLCollectionOf<HTMLInputElement>>document.getElementsByClassName("amountField");
+            let response: HTMLCollectionOf<HTMLParagraphElement> = <HTMLCollectionOf<HTMLParagraphElement>>document.getElementsByClassName("response");
+            
 
             button[x].addEventListener("click", async function (): Promise<void> {
 
@@ -546,7 +561,18 @@ async function createOrder(step: string): Promise<void> {
 
                     if(checkIfOrderIsValid(usableformData, productData, x) == true) {
                         
-                        addAmountToOrder(formData);
+                        response[x].style.color = "black"
+                        amountField[x].value = "";
+                        response[x].innerText = "Sucessful added"
+
+                        addAmountToOrder(usableformData, productData, x, order);
+
+                    }
+                    else {
+                        response[x].style.color = "red"
+                        response[x].style.fontSize = "10pt"
+                        amountField[x].value = "";
+                        response[x].innerText = "Invalid Amount or ME Date"
 
                     }
 
@@ -560,14 +586,52 @@ async function createOrder(step: string): Promise<void> {
 
 }
 
+function addAmountToOrder(amountData: Amount, productData: Product[], productNumber: number, order: Order): void {
 
-function addAmountToOrder(formData: FormData): void {
-
+    if(firstPush == 1) {
     
+    order.OrderPositions = [[productData[productNumber], amountData]];
+    firstPush++;
+    }
+    else {
 
-    let savedData: Product = JSON.parse(sessionStorage.getItem("savedData")); //return to Object
+    order.OrderPositions.push([productData[productNumber], amountData]);
 
-    
+    }
+
+    sessionStorage.setItem("order" , JSON.stringify(order))
+
+}
+
+function confirmOrderOverview(): void {
+
+//Grab HTML Elements before insertion
+let changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
+//Grab HTML Elements before insertion
+
+changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
+
+//Grab HTML Elements after insertion
+let orderId: HTMLDivElement = <HTMLDivElement>document.getElementById("orderId");
+let orderDescription: HTMLDivElement = <HTMLDivElement>document.getElementById("description");
+let orderDelDate: HTMLDivElement = <HTMLDivElement>document.getElementById("deliveryDate");
+let orderPrice: HTMLDivElement = <HTMLDivElement>document.getElementById("price");
+let orderPositions: HTMLDivElement = <HTMLDivElement>document.getElementById("orderPositions");
+//Grab HTML Elements after insertion
+
+let order: Order = JSON.parse(sessionStorage.getItem("order")); //return to Object
+
+orderId.innerText = order.ID;
+orderDescription.innerText = order.Description;
+orderDelDate.innerText = "" ;//Del Date berechenn;
+orderPrice.innerText = "" ; //Price berechnen;
+
+for(let x: number = 0; order.OrderPositions.length; x++) {
+
+    //Positions einfügen inHTML
+
+}
+
 
 }
 

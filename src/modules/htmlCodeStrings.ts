@@ -296,9 +296,6 @@ export let createOrderForm: string = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
 
-    <label for="OrderDate">Order Date:</label><br>
-    <input type="text" name="OrderDate" required /><br/><br>
-
     <button id="submit">Add products to Order</button>
 
     <br/><br>
@@ -311,8 +308,9 @@ export let createOrderForm: string = `
 export let tableHeaderCreateOrder: string = `
 <br>
 <br>
+<button id="submit">Next Step</button>
+<br>
 <table id="table">
-
 <tr>
 <th>ID</th>
 <th>Description</th>
@@ -347,11 +345,39 @@ export let tableBodyCreateOrder: string = `
 <td class=\"form\">
 <form class=\"amount\" onsubmit="return false">
 <label for="Amount">Amount:</label><br>
-<input type="text" name="Amount" required /><br/><br>
+<input type="text" class=\"amountField\" name="Amount" required /><br/><br>
 </form>
+<p class="response"></p>
 </td>
 
 <td> <button class=\"addButton\"> Add Amount to Order </button> </td>
 </tr>
+`;
+
+export let HeaderConfirmOrder: string = `
+<br>
+<br>
+<h1>Your Order:</h1>
+    <br>
+    <h2>Overview:</h2>
+    <br>
+    <h2 id="orderId"></h2>
+    <h3 id="description"></h3>
+    <h3 id="deliveryDate"></h3>
+    <h3 id="price"></h3>
+
+    <h2>Order Positions:</h2>
+
+    <div id="orderPositions">
+
+    </div>
+
+`;
+
+export let BodyConfirmOrder: string = `
+
+    <p id="productDescription">Product Description: </p>
+    <p id="productAmount">Amount: </p>
+
 `;
 

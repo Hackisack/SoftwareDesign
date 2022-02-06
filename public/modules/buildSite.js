@@ -16,6 +16,7 @@ let body = document.getElementById("body");
 //variables
 let adminPrivileges = false;
 let reloadUsableData;
+let firstPush = 1;
 export function startBuilding(usableData, reload) {
     return __awaiter(this, void 0, void 0, function* () {
         reloadUsableData = usableData;
@@ -355,7 +356,7 @@ function searchOrder() {
         });
     });
 }
-function createOrder(step) {
+function createOrder(step, order) {
     return __awaiter(this, void 0, void 0, function* () {
         //Grab HTML Elements before insertion
         let changeSite = document.getElementById("changeSite");
@@ -369,17 +370,24 @@ function createOrder(step) {
             submit.addEventListener("click", function () {
                 return __awaiter(this, void 0, void 0, function* () {
                     let formData = new FormData(form);
-                    if (checkIfFormIsFilled(formData, 3) == true) {
+                    if (checkIfFormIsFilled(formData, 2) == true) {
                         let formParams = new URLSearchParams(formData);
-                        let usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                        sessionStorage.setItem("savedData", JSON.stringify(usableData));
-                        createOrder("two");
+                        let order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                        createOrder("two", order);
                     }
                 });
             });
         }
         else if (step == "two") {
             changeSite.innerHTML = htmlCodeStrings.tableHeaderCreateOrder;
+            let submit = document.getElementById("submit");
+            submit.addEventListener("click", function () {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (sessionStorage.getItem("order") != undefined) {
+                        confirmOrderOverview();
+                    }
+                });
+            });
             let productData = JSON.parse(JSON.stringify((yield allProductDataComm())).replace(/%2B/g, " "));
             //Grab HTML Elements after insertion
             let table = document.getElementById("table");
@@ -411,6 +419,8 @@ function createOrder(step) {
             for (let x = 0; x < productData.length; x++) {
                 let amount = document.getElementsByClassName("amount");
                 let button = document.getElementsByClassName("addButton");
+                let amountField = document.getElementsByClassName("amountField");
+                let response = document.getElementsByClassName("response");
                 button[x].addEventListener("click", function () {
                     return __awaiter(this, void 0, void 0, function* () {
                         let formData = new FormData(amount[x]);
@@ -418,7 +428,16 @@ function createOrder(step) {
                         let usableformData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                         if (checkIfFormIsFilled(formData, 1) == true) {
                             if (checkIfOrderIsValid(usableformData, productData, x) == true) {
-                                addAmountToOrder(formData);
+                                response[x].style.color = "black";
+                                amountField[x].value = "";
+                                response[x].innerText = "Sucessful added";
+                                addAmountToOrder(usableformData, productData, x, order);
+                            }
+                            else {
+                                response[x].style.color = "red";
+                                response[x].style.fontSize = "10pt";
+                                amountField[x].value = "";
+                                response[x].innerText = "Invalid Amount or ME Date";
                             }
                         }
                     });
@@ -427,7 +446,35 @@ function createOrder(step) {
         }
     });
 }
-function addAmountToOrder(formData) {
-    let savedData = JSON.parse(sessionStorage.getItem("savedData")); //return to Object
+function addAmountToOrder(amountData, productData, productNumber, order) {
+    if (firstPush == 1) {
+        order.OrderPositions = [[productData[productNumber], amountData]];
+        firstPush++;
+    }
+    else {
+        order.OrderPositions.push([productData[productNumber], amountData]);
+    }
+    sessionStorage.setItem("order", JSON.stringify(order));
+}
+function confirmOrderOverview() {
+    //Grab HTML Elements before insertion
+    let changeSite = document.getElementById("changeSite");
+    //Grab HTML Elements before insertion
+    changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
+    //Grab HTML Elements after insertion
+    let orderId = document.getElementById("orderId");
+    let orderDescription = document.getElementById("description");
+    let orderDelDate = document.getElementById("deliveryDate");
+    let orderPrice = document.getElementById("price");
+    let orderPositions = document.getElementById("orderPositions");
+    //Grab HTML Elements after insertion
+    let order = JSON.parse(sessionStorage.getItem("order")); //return to Object
+    orderId.innerText = order.ID;
+    orderDescription.innerText = order.Description;
+    orderDelDate.innerText = ""; //Del Date berechenn;
+    orderPrice.innerText = ""; //Price berechnen;
+    for (let x = 0; order.OrderPositions.length; x++) {
+        //Positions einfügen inHTML
+    }
 }
 //# sourceMappingURL=buildSite.js.map
