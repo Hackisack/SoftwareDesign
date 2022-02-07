@@ -10,13 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 //module imports
 import { checkIfFormIsFilled, checkIfOrderIsValid } from "./formCheck.js";
 import * as htmlCodeStrings from "./htmlCodeStrings.js";
-import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
+import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
 //Grab HTML-Elements
 let body = document.getElementById("body");
 //variables
 let adminPrivileges = false;
 let reloadUsableData;
-let firstPush = 1;
 export function startBuilding(usableData, reload) {
     return __awaiter(this, void 0, void 0, function* () {
         reloadUsableData = usableData;
@@ -142,7 +141,7 @@ function changeAdmin() {
         let privileges = document.getElementsByClassName("privileges");
         let changeButton = document.getElementsByClassName("changeButton");
         //Grab HTML Elements after insertion
-        let adminData = JSON.parse(JSON.stringify((yield allAdminDataComm()).replace(/%2B/g, " ")));
+        let adminData = JSON.parse(JSON.stringify((yield allAdminDataComm())).replace(/%2B/g, " "));
         for (let x = 0; x < adminData.length; x++) { //Build all Table Entrys
             table.innerHTML += htmlCodeStrings.tableBodyUser;
             username[x].textContent = adminData[x].Username;
@@ -361,16 +360,23 @@ function createOrder(step, order) {
         //Grab HTML Elements before insertion
         let changeSite = document.getElementById("changeSite");
         //Grab HTML Elements before insertion
+        //Reset sessionStorage
+        sessionStorage.clear();
         if (step == "one") {
             changeSite.innerHTML = htmlCodeStrings.createOrderForm;
             //Grab HTML Elements after insertion
             let form = document.getElementById("form");
             let submit = document.getElementById("submit");
+            let customer = document.getElementById("customer");
             //Grab HTML Elements after insertion  
+            let allCustomer = JSON.parse((yield allCustomerDataComm()).replace(/%2B/g, " "));
+            for (let x = 0; x < allCustomer.length; x++) {
+                customer.innerHTML += "<option >" + allCustomer[x].Name + "</option>";
+            }
             submit.addEventListener("click", function () {
                 return __awaiter(this, void 0, void 0, function* () {
                     let formData = new FormData(form);
-                    if (checkIfFormIsFilled(formData, 2) == true) {
+                    if (checkIfFormIsFilled(formData, 3) == true) {
                         let formParams = new URLSearchParams(formData);
                         let order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                         createOrder("two", order);
@@ -382,13 +388,15 @@ function createOrder(step, order) {
             changeSite.innerHTML = htmlCodeStrings.tableHeaderCreateOrder;
             let submit = document.getElementById("submit");
             submit.addEventListener("click", function () {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (sessionStorage.getItem("order") != undefined) {
-                        confirmOrderOverview();
-                    }
-                });
+                if (order.OrderPositions != undefined) {
+                    confirmOrderOverview(order);
+                }
+                else {
+                    let response = document.getElementById("response");
+                    response.innerText = "Please add at least one Position to your Order";
+                }
             });
-            let productData = JSON.parse(JSON.stringify((yield allProductDataComm())).replace(/%2B/g, " "));
+            let productData = yield allProductDataComm();
             //Grab HTML Elements after insertion
             let table = document.getElementById("table");
             //Grab HTML Elements after insertion
@@ -414,7 +422,7 @@ function createOrder(step, order) {
                 minBG[x].textContent = productData[x].MinBG.toString() + " pieces";
                 maxBG[x].textContent = productData[x].MaxBG.toString() + " pieces";
                 discountBG[x].textContent = productData[x].DiscountBG.toString() + " pieces";
-                discount[x].textContent = productData[x].Discount.toString() + " €";
+                discount[x].textContent = productData[x].Discount.toString() + " %";
             }
             for (let x = 0; x < productData.length; x++) {
                 let amount = document.getElementsByClassName("amount");
@@ -431,13 +439,13 @@ function createOrder(step, order) {
                                 response[x].style.color = "black";
                                 amountField[x].value = "";
                                 response[x].innerText = "Sucessful added";
-                                addAmountToOrder(usableformData, productData, x, order);
+                                order = addAmountToOrder(usableformData, productData, x, order);
                             }
                             else {
                                 response[x].style.color = "red";
                                 response[x].style.fontSize = "10pt";
                                 amountField[x].value = "";
-                                response[x].innerText = "Invalid Amount or ME Date";
+                                response[x].innerText = "Invalid Amount or ME-Date";
                             }
                         }
                     });
@@ -447,34 +455,74 @@ function createOrder(step, order) {
     });
 }
 function addAmountToOrder(amountData, productData, productNumber, order) {
-    if (firstPush == 1) {
+    if (order.OrderPositions == undefined) {
         order.OrderPositions = [[productData[productNumber], amountData]];
-        firstPush++;
     }
     else {
         order.OrderPositions.push([productData[productNumber], amountData]);
     }
-    sessionStorage.setItem("order", JSON.stringify(order));
+    //initialize Delivery Date
+    order.DeliveryDate = new Date();
+    order.OrderDate = new Date();
+    return order;
 }
-function confirmOrderOverview() {
+function confirmOrderOverview(order) {
     //Grab HTML Elements before insertion
     let changeSite = document.getElementById("changeSite");
     //Grab HTML Elements before insertion
     changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
     //Grab HTML Elements after insertion
+    let confirmBttn = document.getElementById("confirm");
     let orderId = document.getElementById("orderId");
+    let orderCustomer = document.getElementById("orderCustomer");
     let orderDescription = document.getElementById("description");
     let orderDelDate = document.getElementById("deliveryDate");
     let orderPrice = document.getElementById("price");
     let orderPositions = document.getElementById("orderPositions");
     //Grab HTML Elements after insertion
-    let order = JSON.parse(sessionStorage.getItem("order")); //return to Object
-    orderId.innerText = order.ID;
-    orderDescription.innerText = order.Description;
-    orderDelDate.innerText = ""; //Del Date berechenn;
-    orderPrice.innerText = ""; //Price berechnen;
-    for (let x = 0; order.OrderPositions.length; x++) {
-        //Positions einfügen inHTML
+    confirmBttn.addEventListener("click", function () {
+        return __awaiter(this, void 0, void 0, function* () {
+            if ((yield createOrderComm(order)) == true) {
+                changeSite.innerHTML = "Order added";
+            }
+            else {
+                changeSite.innerHTML = "ID already in use";
+            }
+        });
+    });
+    //calculate latest StandarDeliverDate
+    let highestDelivery = 0;
+    for (let x = 0; x < order.OrderPositions.length; x++) {
+        if (order.OrderPositions[x][0].StandardDeliveryTime >= highestDelivery) {
+            highestDelivery = order.OrderPositions[x][0].StandardDeliveryTime;
+        }
+    }
+    orderId.innerText = "Order ID: " + order.ID;
+    orderCustomer.innerText = "Customer: " + order.Customer.toString().replace("+", " ");
+    orderDescription.innerText = "Order Description: " + order.Description;
+    let time = +highestDelivery;
+    order.DeliveryDate.setDate(order.DeliveryDate.getDate() + time);
+    orderDelDate.innerText = "Delivery Date: " + order.DeliveryDate.getDate().toString() + "." + (order.DeliveryDate.getMonth() + 1) + "." + order.DeliveryDate.getFullYear().toString();
+    //Calculate price
+    let fullPrice = 0;
+    for (let x = 0; x < order.OrderPositions.length; x++) {
+        let price = +order.OrderPositions[x][0].Price;
+        let amount = +order.OrderPositions[x][1].Amount;
+        let discount = +order.OrderPositions[x][0].Discount;
+        if (order.OrderPositions[x][0].DiscountBG <= order.OrderPositions[x][1].Amount) {
+            fullPrice += (price * amount);
+            fullPrice += fullPrice - (fullPrice * (discount / 100));
+        }
+        else {
+            fullPrice += price * amount;
+        }
+        ;
+    }
+    order.Price = fullPrice;
+    orderPrice.innerText = fullPrice.toString() + "€";
+    for (let x = 0; x < order.OrderPositions.length; x++) {
+        orderPositions.innerText += "Description: " + order.OrderPositions[x][0].Description + "," + " " + "Amount: " + order.OrderPositions[x][1].Amount;
+        orderPositions.innerHTML += "<br>";
     }
 }
 //# sourceMappingURL=buildSite.js.map

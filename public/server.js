@@ -136,6 +136,20 @@ function handleRequest(_request, _response) {
                 _response.write(yield retrieveAllProduct());
                 _response.end();
             }
+            if (checkForId.ServerId == "AllCustomer") { //Check and create User
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield retrieveAllCustomer());
+                _response.end();
+            }
+            if (checkForId.ServerId == "CreateOrder") { //Check and create User
+                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                delete usableData.ServerId;
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield createOrder(usableData));
+                _response.end();
+            }
         }));
     }
 }
@@ -250,6 +264,26 @@ function retrieveAllProduct() {
     return __awaiter(this, void 0, void 0, function* () {
         let allData = yield databaseProducts.find({}).toArray();
         return JSON.stringify(allData);
+    });
+}
+function retrieveAllCustomer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let allData = yield databaseCustomers.find({}).toArray();
+        return JSON.stringify(allData);
+    });
+}
+function createOrder(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let allData = (yield databaseOrders.find().toArray());
+        if (allData.length >= 1) {
+            for (let x = 0; x < allData.length; x++) {
+                if (allData[x].ID == usableData.ID) {
+                    return "false";
+                }
+            }
+        }
+        yield databaseOrders.insertOne(usableData);
+        return "true";
     });
 }
 //# sourceMappingURL=server.js.map

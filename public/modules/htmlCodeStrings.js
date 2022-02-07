@@ -275,6 +275,13 @@ export let createOrderForm = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
 
+    <label for="Customer">Customer:</label><br>
+    <select id="customer" name="Customer" required>    
+    </select>
+
+    <br>
+    <br>
+
     <button id="submit">Add products to Order</button>
 
     <br/><br>
@@ -287,6 +294,8 @@ export let tableHeaderCreateOrder = `
 <br>
 <br>
 <button id="submit">Next Step</button>
+<br>
+<p id="response"></p>
 <br>
 <table id="table">
 <tr>
@@ -335,8 +344,8 @@ export let HeaderConfirmOrder = `
 <h1>Your Order:</h1>
     <br>
     <h2>Overview:</h2>
-    <br>
     <h2 id="orderId"></h2>
+    <h2 id="orderCustomer"></h2>
     <h3 id="description"></h3>
     <h3 id="deliveryDate"></h3>
     <h3 id="price"></h3>
@@ -346,6 +355,10 @@ export let HeaderConfirmOrder = `
     <div id="orderPositions">
 
     </div>
+
+    <br>
+
+    <button id="confirm"> Create Order </button>
 
 `;
 export let BodyConfirmOrder = `

@@ -2,7 +2,7 @@
 import { checkIfFormIsFilled, checkIfOrderIsValid } from "./formCheck.js";
 import * as htmlCodeStrings from "./htmlCodeStrings.js";
 import { AdminData, Amount, Customer, LoginData, Order, Product, SearchTerm, UserData } from "./interfaces.js";
-import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
+import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
 
 //Grab HTML-Elements
 let body: HTMLElement = <HTMLElement>document.getElementById("body");
@@ -10,7 +10,6 @@ let body: HTMLElement = <HTMLElement>document.getElementById("body");
 //variables
 let adminPrivileges: boolean = false;
 let reloadUsableData: LoginData;
-let firstPush: number = 1;
 
 export async function startBuilding(usableData: LoginData, reload?: string): Promise<void> {
     reloadUsableData = usableData;
@@ -157,7 +156,7 @@ async function changeAdmin(): Promise<void> {
     let changeButton: HTMLCollection = document.getElementsByClassName("changeButton");
     //Grab HTML Elements after insertion
 
-    let adminData: AdminData[] = JSON.parse(JSON.stringify((await allAdminDataComm()).replace(/%2B/g, " ")));
+    let adminData: AdminData[] = JSON.parse(JSON.stringify((await allAdminDataComm())).replace(/%2B/g, " "));
 
     for (let x: number = 0; x < adminData.length; x++) { //Build all Table Entrys
 
@@ -461,6 +460,10 @@ async function createOrder(step: string, order?: Order): Promise<void> {
     let changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
     //Grab HTML Elements before insertion
 
+    //Reset sessionStorage
+    sessionStorage.clear();
+
+
     if (step == "one") {
 
         changeSite.innerHTML = htmlCodeStrings.createOrderForm;
@@ -468,17 +471,26 @@ async function createOrder(step: string, order?: Order): Promise<void> {
         //Grab HTML Elements after insertion
         let form: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
         let submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
+        let customer: HTMLSelectElement = <HTMLSelectElement>document.getElementById("customer");
         //Grab HTML Elements after insertion  
+
+
+        let allCustomer: Customer[] = JSON.parse((await allCustomerDataComm()).replace(/%2B/g, " "));
+
+        for (let x = 0; x < allCustomer.length; x++) {
+
+            customer.innerHTML += "<option >" + allCustomer[x].Name + "</option>";
+
+        }
 
         submit.addEventListener("click", async function (): Promise<void> {
 
             let formData: FormData = new FormData(form);
 
-            if (checkIfFormIsFilled(formData, 2) == true) {
+            if (checkIfFormIsFilled(formData, 3) == true) {
 
                 let formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
                 let order: Order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-
                 createOrder("two", order);
 
             }
@@ -489,23 +501,29 @@ async function createOrder(step: string, order?: Order): Promise<void> {
 
     else if (step == "two") {
 
-       
+
 
         changeSite.innerHTML = htmlCodeStrings.tableHeaderCreateOrder;
 
         let submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
 
-        submit.addEventListener("click",async function (): Promise<void> {
+        submit.addEventListener("click", function (): void {
 
-            if(sessionStorage.getItem("order") != undefined) {
+            if (order.OrderPositions != undefined) {
 
-                confirmOrderOverview();
+                confirmOrderOverview(order);
+
+            }
+            else {
+
+                let response: HTMLParagraphElement = <HTMLParagraphElement>document.getElementById("response");
+                response.innerText = "Please add at least one Position to your Order";
 
             }
 
         });
 
-        let productData: Product[] = JSON.parse(JSON.stringify((await allProductDataComm())).replace(/%2B/g, " "));
+        let productData: Product[] = await allProductDataComm();
 
         //Grab HTML Elements after insertion
         let table: HTMLDivElement = <HTMLDivElement>document.getElementById("table");
@@ -537,9 +555,7 @@ async function createOrder(step: string, order?: Order): Promise<void> {
             minBG[x].textContent = productData[x].MinBG.toString() + " pieces";
             maxBG[x].textContent = productData[x].MaxBG.toString() + " pieces";
             discountBG[x].textContent = productData[x].DiscountBG.toString() + " pieces";
-            discount[x].textContent = productData[x].Discount.toString() + " €";
-
-
+            discount[x].textContent = productData[x].Discount.toString() + " %";
 
         }
 
@@ -549,7 +565,7 @@ async function createOrder(step: string, order?: Order): Promise<void> {
             let button: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>>document.getElementsByClassName("addButton");
             let amountField: HTMLCollectionOf<HTMLInputElement> = <HTMLCollectionOf<HTMLInputElement>>document.getElementsByClassName("amountField");
             let response: HTMLCollectionOf<HTMLParagraphElement> = <HTMLCollectionOf<HTMLParagraphElement>>document.getElementsByClassName("response");
-            
+
 
             button[x].addEventListener("click", async function (): Promise<void> {
 
@@ -559,20 +575,20 @@ async function createOrder(step: string, order?: Order): Promise<void> {
 
                 if (checkIfFormIsFilled(formData, 1) == true) {
 
-                    if(checkIfOrderIsValid(usableformData, productData, x) == true) {
-                        
+                    if (checkIfOrderIsValid(usableformData, productData, x) == true) {
+
                         response[x].style.color = "black"
                         amountField[x].value = "";
                         response[x].innerText = "Sucessful added"
 
-                        addAmountToOrder(usableformData, productData, x, order);
+                        order = addAmountToOrder(usableformData, productData, x, order);
 
                     }
                     else {
                         response[x].style.color = "red"
                         response[x].style.fontSize = "10pt"
                         amountField[x].value = "";
-                        response[x].innerText = "Invalid Amount or ME Date"
+                        response[x].innerText = "Invalid Amount or ME-Date"
 
                     }
 
@@ -586,52 +602,115 @@ async function createOrder(step: string, order?: Order): Promise<void> {
 
 }
 
-function addAmountToOrder(amountData: Amount, productData: Product[], productNumber: number, order: Order): void {
+function addAmountToOrder(amountData: Amount, productData: Product[], productNumber: number, order: Order): Order {
 
-    if(firstPush == 1) {
-    
-    order.OrderPositions = [[productData[productNumber], amountData]];
-    firstPush++;
+    if (order.OrderPositions == undefined) {
+
+        order.OrderPositions = [[productData[productNumber], amountData]];
     }
     else {
 
-    order.OrderPositions.push([productData[productNumber], amountData]);
+        order.OrderPositions.push([productData[productNumber], amountData]);
+
+    }
+    //initialize Delivery Date
+    order.DeliveryDate = new Date();
+    order.OrderDate = new Date();
+   
+    return order;
+
+}
+
+function confirmOrderOverview(order: Order): void {
+
+    //Grab HTML Elements before insertion
+    let changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
+    //Grab HTML Elements before insertion
+
+    changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
+
+    //Grab HTML Elements after insertion
+    let confirmBttn: HTMLDivElement = <HTMLDivElement>document.getElementById("confirm");
+    let orderId: HTMLDivElement = <HTMLDivElement>document.getElementById("orderId");
+    let orderCustomer: HTMLDivElement = <HTMLDivElement>document.getElementById("orderCustomer");
+    let orderDescription: HTMLDivElement = <HTMLDivElement>document.getElementById("description");
+    let orderDelDate: HTMLDivElement = <HTMLDivElement>document.getElementById("deliveryDate");
+    let orderPrice: HTMLDivElement = <HTMLDivElement>document.getElementById("price");
+    let orderPositions: HTMLDivElement = <HTMLDivElement>document.getElementById("orderPositions");
+    //Grab HTML Elements after insertion
+
+    confirmBttn.addEventListener("click", async function (): Promise<void> {
+        
+    if (await createOrderComm(order) == true) {
+        
+        changeSite.innerHTML = "Order added";
 
     }
 
-    sessionStorage.setItem("order" , JSON.stringify(order))
+    else {
 
-}
+        changeSite.innerHTML = "ID already in use" ;
 
-function confirmOrderOverview(): void {
+    }
+        
+    
+    });
 
-//Grab HTML Elements before insertion
-let changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
-//Grab HTML Elements before insertion
+    //calculate latest StandarDeliverDate
+    let highestDelivery: number = 0;
+    for (let x = 0; x < order.OrderPositions.length; x++) {
 
-changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
+        if (order.OrderPositions[x][0].StandardDeliveryTime >= highestDelivery) {
 
-//Grab HTML Elements after insertion
-let orderId: HTMLDivElement = <HTMLDivElement>document.getElementById("orderId");
-let orderDescription: HTMLDivElement = <HTMLDivElement>document.getElementById("description");
-let orderDelDate: HTMLDivElement = <HTMLDivElement>document.getElementById("deliveryDate");
-let orderPrice: HTMLDivElement = <HTMLDivElement>document.getElementById("price");
-let orderPositions: HTMLDivElement = <HTMLDivElement>document.getElementById("orderPositions");
-//Grab HTML Elements after insertion
+            highestDelivery = order.OrderPositions[x][0].StandardDeliveryTime;
 
-let order: Order = JSON.parse(sessionStorage.getItem("order")); //return to Object
+        }
 
-orderId.innerText = order.ID;
-orderDescription.innerText = order.Description;
-orderDelDate.innerText = "" ;//Del Date berechenn;
-orderPrice.innerText = "" ; //Price berechnen;
+    }
 
-for(let x: number = 0; order.OrderPositions.length; x++) {
+    orderId.innerText = "Order ID: " + order.ID;
 
-    //Positions einfügen inHTML
+    orderCustomer.innerText = "Customer: " + order.Customer.toString().replace("+", " ");
 
-}
+    orderDescription.innerText = "Order Description: " + order.Description;
 
+    let time: number = +highestDelivery;
+    order.DeliveryDate.setDate(order.DeliveryDate.getDate() + time);
+    orderDelDate.innerText = "Delivery Date: " + order.DeliveryDate.getDate().toString() +"." + (order.DeliveryDate.getMonth() + 1) +"."+ order.DeliveryDate.getFullYear().toString() ;
+
+
+    
+    //Calculate price
+    let fullPrice: number = 0;
+    for (let x: number = 0; x < order.OrderPositions.length; x++) {
+
+        let price: number = +order.OrderPositions[x][0].Price
+        let amount: number = +order.OrderPositions[x][1].Amount
+        let discount: number = +order.OrderPositions[x][0].Discount
+        
+        if( order.OrderPositions[x][0].DiscountBG <= order.OrderPositions[x][1].Amount) {
+
+            fullPrice += (price * amount);
+            fullPrice += fullPrice - (fullPrice * (discount/100));
+
+        }
+        else {fullPrice += price * amount};
+
+    }
+
+    order.Price = fullPrice;
+
+    orderPrice.innerText = fullPrice.toString() + "€";
+
+
+    for (let x = 0; x < order.OrderPositions.length; x++) {
+        
+        orderPositions.innerText += "Description: " + order.OrderPositions[x][0].Description + "," + " " + "Amount: " + order.OrderPositions[x][1].Amount;
+        orderPositions.innerHTML += "<br>";
+        
+    }
+
+    
 
 }
 

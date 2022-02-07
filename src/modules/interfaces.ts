@@ -50,6 +50,7 @@ export interface Customer {
 
 export interface Order {
     ID: string;
+    Customer: Customer;
     Description: string;
     OrderDate: Date;
     DeliveryDate: Date; 

@@ -1,5 +1,5 @@
 //Module Imports
-import { Customer, LoginData, Product, SearchTerm, UserData } from "./interfaces.js";
+import { Customer, LoginData, Order, Product, SearchTerm, UserData } from "./interfaces.js";
 
 
 
@@ -193,16 +193,27 @@ export async function searchOrderComm(usableData: SearchTerm): Promise<string> {
     else return answer;
 }
 
-export async function createOrderComm(usableData: Customer): Promise<boolean> {
+export async function createOrderComm(usableData: Order): Promise<boolean> {
 
     let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
 
     fetchString.append("ID", usableData.ID);
-    fetchString.append("Name", usableData.Name);
-    fetchString.append("Adress", usableData.Adress);
-    fetchString.append("Discount", usableData.Discount.toString());
-    fetchString.append("ServerId", "CreateCustomer");
+    fetchString.append("Customer", usableData.Customer.toString());
+    fetchString.append("Description", usableData.Description);
+    fetchString.append("OrderDate", usableData.OrderDate.toString());
+    fetchString.append("DeliveryDate", usableData.DeliveryDate.toString());
+    fetchString.append("Price", usableData.Price.toString());
 
+    for (let x = 0; x < usableData.OrderPositions.length; x++) {
+        
+        fetchString.append("OrderPositions" + x, usableData.OrderPositions[x][0].ID);
+        fetchString.append("Amount" + x, usableData.OrderPositions[x][1].Amount.toString());
+
+    }
+
+    fetchString.append("ServerId", "CreateOrder");
+    
+    
     let response: Response = await fetch("http://localhost:8100", {
 
         method: "POST",
@@ -216,7 +227,7 @@ export async function createOrderComm(usableData: Customer): Promise<boolean> {
     else return false;
 }
 
-export async function allProductDataComm(): Promise<string> {
+export async function allProductDataComm(): Promise<Product[]> {
 
     let fetchString: URLSearchParams = new URLSearchParams();
 
@@ -229,7 +240,27 @@ export async function allProductDataComm(): Promise<string> {
         body: fetchString
     });
 
-    let answer: string = await response.json();
+    let answer: Product[] = await response.json();
 
     return answer;
 }
+
+export async function allCustomerDataComm(): Promise<string> {
+
+    let fetchString: URLSearchParams = new URLSearchParams();
+
+    fetchString.append("ServerId", "AllCustomer");
+
+    let response: Response = await fetch("http://localhost:8100", {
+
+        method: "POST",
+
+        body: fetchString
+    });
+
+    let answer: string = await response.text();
+
+    return answer;
+}
+
+

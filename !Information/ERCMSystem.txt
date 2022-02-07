@@ -65,3 +65,14 @@ Die Rolle des Benutzers:
 Bonus: Für eine Firma ist es immens wichtig eine ABC-Analyse über ein Artikel- und Kundenportfolio machen zu können.
 Eine Darstellung einer ABC-Analyse über die bestehenden Artikel- und Kundenumsätze wäre hierbei sehr hilfreich:
 https://de.wikipedia.org/wiki/ABC-Analyse
+
+
+
+!!!!!!!!!!!!!! 
+0. Order suchen überarbeiten
+1. Bearbeiten einfügen bei suchen
+2. Id einzigartigkeit check überprüfen bevor fortfahren
+3. regex für ID, Username, password
+4. design patterns
+
+--> Code aufräumen

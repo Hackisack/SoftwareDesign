@@ -170,10 +170,16 @@ export function createOrderComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
         fetchString.append("ID", usableData.ID);
-        fetchString.append("Name", usableData.Name);
-        fetchString.append("Adress", usableData.Adress);
-        fetchString.append("Discount", usableData.Discount.toString());
-        fetchString.append("ServerId", "CreateCustomer");
+        fetchString.append("Customer", usableData.Customer.toString());
+        fetchString.append("Description", usableData.Description);
+        fetchString.append("OrderDate", usableData.OrderDate.toString());
+        fetchString.append("DeliveryDate", usableData.DeliveryDate.toString());
+        fetchString.append("Price", usableData.Price.toString());
+        for (let x = 0; x < usableData.OrderPositions.length; x++) {
+            fetchString.append("OrderPositions" + x, usableData.OrderPositions[x][0].ID);
+            fetchString.append("Amount" + x, usableData.OrderPositions[x][1].Amount.toString());
+        }
+        fetchString.append("ServerId", "CreateOrder");
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -195,6 +201,18 @@ export function allProductDataComm() {
             body: fetchString
         });
         let answer = yield response.json();
+        return answer;
+    });
+}
+export function allCustomerDataComm() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let fetchString = new URLSearchParams();
+        fetchString.append("ServerId", "AllCustomer");
+        let response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        let answer = yield response.text();
         return answer;
     });
 }

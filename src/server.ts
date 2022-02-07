@@ -14,13 +14,25 @@ interface ServerId {
   }
 
 interface OrderData extends WithId<Document> {
-  ID: string;
-  OrderDate: Date;
-  DeliveryDate: Date; 
-  Price: number;
-  Description: string;
-  OrderPositions: Product[];
+    ID: string;
+    Customer: Customer;
+    Description: string;
+    OrderDate: Date;
+    DeliveryDate: Date; 
+    Price: number;
+    OrderPositions: [[Product, Amount]];
   }
+
+  interface Customer extends WithId<Document>{
+    ID: string;
+    Name: string;
+    Adress: string; 
+    Discount: number;
+    }
+
+  interface Amount extends WithId<Document> {
+    Amount: number;
+    } 
 
 interface Username extends WithId<Document> {
     Username: string;
@@ -249,6 +261,28 @@ function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerRes
 
     }
 
+        if (checkForId.ServerId == "AllCustomer") { //Check and create User
+              
+          _response.setHeader("content-type", "text/html; charset=utf-8");
+          _response.setHeader("Access-Control-Allow-Origin", "*");
+          _response.write(await retrieveAllCustomer());
+          _response.end();
+
+    }
+
+        if (checkForId.ServerId == "CreateOrder") { //Check and create User
+                 
+          let usableData: OrderData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+          delete usableData.ServerId;
+          _response.setHeader("content-type", "text/html; charset=utf-8");
+          _response.setHeader("Access-Control-Allow-Origin", "*");
+          _response.write(await createOrder(usableData));
+          _response.end();
+
+}
+
+    
+
 
       });
 
@@ -418,5 +452,36 @@ async function retrieveAllProduct(): Promise<string> {
   let allData: Product[] = await databaseProducts.find({}).toArray() as Product[];
   
   return JSON.stringify(allData);
+
+}
+
+async function retrieveAllCustomer(): Promise<string> {
+
+  let allData: CustomerData[] = await databaseCustomers.find({}).toArray() as CustomerData[];
+  
+  return JSON.stringify(allData);
+
+}
+
+async function createOrder(usableData: OrderData): Promise<string> {
+
+  let allData: OrderData[] = (await databaseOrders.find().toArray()) as OrderData[];
+  
+  if (allData.length >= 1) {
+
+    for (let x: number = 0; x < allData.length; x++) {
+
+      if (allData[x].ID == usableData.ID) { 
+        
+        return "false";
+      
+      }
+
+    }
+
+  }
+  await databaseOrders.insertOne(usableData);
+
+  return "true";
 
 }
