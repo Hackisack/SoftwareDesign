@@ -1,266 +1,225 @@
-//Module Imports
-import { Customer, LoginData, Order, Product, SearchTerm, UserData } from "./interfaces.js";
+/* eslint-disable eqeqeq */
+// Module Imports
+import { ChangeAdmin, Customer, LoginData, Order, Product, SearchTerm, ServerId, UserData } from "./interfaces.js";
 
+// Code
+export async function checkLoginOrAdminComm (usableData: LoginData): Promise<boolean> {
+  const fetchString: string = JSON.stringify(usableData);
 
+  const response: Response = await fetch("http://localhost:8100", {
 
-//Code
-export async function checkLoginOrAdminComm(usableData: LoginData): Promise<boolean> {
+    method: "POST",
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+    body: fetchString
+  });
 
-    fetchString.append("Username", usableData.Username);
-    fetchString.append("Password", usableData.Password);
-    fetchString.append("ServerId", usableData.ServerId);
+  const answer: string = await response.text();
 
-    let response: Response = await fetch("http://localhost:8100", {
-
-        method: "POST",
-
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    if (answer == "true") { return true; }
-    else return false;
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }
 
+export async function addUserComm (usableData: UserData): Promise<boolean> {
+  usableData.ServerId = "CreateUser";
+  const fetchString: string = JSON.stringify(usableData);
 
-export async function addUserComm(usableData: UserData): Promise<boolean> {
+  const response: Response = await fetch("http://localhost:8100", {
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+    method: "POST",
 
-    fetchString.append("Username", usableData.Username);
-    fetchString.append("Password", usableData.Password);
-    fetchString.append("Admin", usableData.Admin);
-    fetchString.append("ServerId", "CreateUser");
+    body: fetchString
+  });
 
-    let response: Response = await fetch("http://localhost:8100", {
+  const answer: string = await response.text();
 
-        method: "POST",
-
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    if (answer == "true") { return true; }
-    else return false;
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }
 
-export async function allAdminDataComm(): Promise<string> {
+export async function allAdminDataComm (): Promise<string> {
+  const serverId: ServerId = {
+    ServerId: "AllAdmin"
+  };
+  const fetchString: string = JSON.stringify(serverId);
 
-    let fetchString: URLSearchParams = new URLSearchParams();
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ServerId", "AllAdmin");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
+  const answer: string = await response.json();
 
-        body: fetchString
-    });
-
-    let answer: string = await response.json();
-
-    return answer;
+  return answer;
 }
 
-export async function changeAdminPrivilegesComm(username: string): Promise<string> {
+export async function changeAdminPrivilegesComm (username: string): Promise<string> {
+  const serverId: ChangeAdmin = {
+    ServerId: "ChangeAdmin",
+    Username: username
+  };
+  const fetchString: string = JSON.stringify(serverId);
 
-    let fetchString: URLSearchParams = new URLSearchParams();
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ServerId", "ChangeAdmin");
-    fetchString.append("Username", username);
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
+  const answer: string = await response.text();
 
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    return answer;
+  return answer;
 }
 
-export async function addProductComm(usableData: Product): Promise<boolean> {
+export async function addProductComm (usableData: Product): Promise<boolean> {
+  usableData.ServerId = "CreateProduct";
+  const fetchString: string = JSON.stringify(usableData);
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Funktioniert nicht manuell eintragen?
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ID", usableData.ID);
-    fetchString.append("Description", usableData.Description);
-    fetchString.append("MEDate", usableData.MEDate.toString());
-    fetchString.append("Price", usableData.Price.toString());
-    fetchString.append("StandardDeliveryTime", usableData.StandardDeliveryTime.toString());
-    fetchString.append("MinBG", usableData.MinBG.toString());
-    fetchString.append("MaxBG", usableData.MaxBG.toString());
-    fetchString.append("DiscountBG", usableData.DiscountBG.toString());
-    fetchString.append("Discount", usableData.Discount.toString());
-    fetchString.append("ServerId", "CreateProduct");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
+  const answer: string = await response.text();
 
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    if (answer == "true") { return true; }
-    else return false;
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }
 
-export async function searchProductComm(usableData: SearchTerm): Promise<string> {
+export async function searchProductComm (usableData: SearchTerm): Promise<string> {
+  usableData.ServerId = "SearchProduct";
+  const fetchString: string = JSON.stringify(usableData);
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("SearchTerm", usableData.SearchTerm);
-    fetchString.append("ServerId", "SearchProduct");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
-
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-    if (answer == null) {return "empty"; }
-    else return answer;
+  const answer: string = await response.text();
+  if (answer == null) {
+    return "empty";
+  }
+  else return answer;
 }
 
-export async function addCustomerComm(usableData: Customer): Promise<boolean> {
+export async function addCustomerComm (usableData: Customer): Promise<boolean> {
+  usableData.ServerId = "CreateCustomer";
+  const fetchString: string = JSON.stringify(usableData);
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ID", usableData.ID);
-    fetchString.append("Name", usableData.Name);
-    fetchString.append("Adress", usableData.Adress);
-    fetchString.append("Discount", usableData.Discount.toString());
-    fetchString.append("ServerId", "CreateCustomer");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
+  const answer: string = await response.text();
 
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    if (answer == "true") { return true; }
-    else return false;
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }
 
-export async function searchCustomerComm(usableData: SearchTerm): Promise<string> {
+export async function searchCustomerComm (usableData: SearchTerm): Promise<string> {
+  usableData.ServerId = "SearchCustomer";
+  const fetchString: string = JSON.stringify(usableData);
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("SearchTerm", usableData.SearchTerm);
-    fetchString.append("ServerId", "SearchCustomer");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
-
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-    if (answer == null) {return "empty"; }
-    else return answer;
+  const answer: string = await response.text();
+  if (answer == null) {
+    return "empty";
+  }
+  else return answer;
 }
 
-export async function searchOrderComm(usableData: SearchTerm): Promise<string> {
+export async function searchOrderComm (usableData: SearchTerm): Promise<string> {
+  usableData.ServerId = "SearchOrder";
+  const fetchString: string = JSON.stringify(usableData);
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString());
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("SearchTerm", usableData.SearchTerm);
-    fetchString.append("ServerId", "SearchOrder");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
-
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-    if (answer == null) {return "empty"; }
-    else return answer;
+  const answer: string = await response.text();
+  if (answer == null) {
+    return "empty";
+  }
+  else return answer;
 }
 
-export async function createOrderComm(usableData: Order): Promise<boolean> {
+export async function createOrderComm (usableData: Order): Promise<boolean> {
+  usableData.ServerId = "CreateOrder";
+  const fetchString: string = JSON.stringify(usableData);
 
-    let fetchString: URLSearchParams = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ID", usableData.ID);
-    fetchString.append("Customer", usableData.Customer.toString());
-    fetchString.append("Description", usableData.Description);
-    fetchString.append("OrderDate", usableData.OrderDate.toString());
-    fetchString.append("DeliveryDate", usableData.DeliveryDate.toString());
-    fetchString.append("Price", usableData.Price.toString());
+    method: "POST",
 
-    for (let x = 0; x < usableData.OrderPositions.length; x++) {
-        
-        fetchString.append("OrderPositions" + x, usableData.OrderPositions[x][0].ID);
-        fetchString.append("Amount" + x, usableData.OrderPositions[x][1].Amount.toString());
+    body: fetchString
+  });
 
-    }
+  const answer: string = await response.text();
 
-    fetchString.append("ServerId", "CreateOrder");
-    
-    
-    let response: Response = await fetch("http://localhost:8100", {
-
-        method: "POST",
-
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    if (answer == "true") { return true; }
-    else return false;
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }
 
-export async function allProductDataComm(): Promise<Product[]> {
+export async function allProductDataComm (): Promise<Product[]> {
+  const serverId: ServerId = {
+    ServerId: "AllProduct"
+  };
+  const fetchString: string = JSON.stringify(serverId);
 
-    let fetchString: URLSearchParams = new URLSearchParams();
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ServerId", "AllProduct");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
+  const answer: Product[] = await response.json();
 
-        body: fetchString
-    });
-
-    let answer: Product[] = await response.json();
-
-    return answer;
+  return answer;
 }
 
-export async function allCustomerDataComm(): Promise<string> {
+export async function allCustomerDataComm (): Promise<string> {
+  const serverId: ServerId = {
+    ServerId: "AllCustomer"
+  };
+  const fetchString: string = JSON.stringify(serverId);
 
-    let fetchString: URLSearchParams = new URLSearchParams();
+  const response: Response = await fetch("http://localhost:8100", {
 
-    fetchString.append("ServerId", "AllCustomer");
+    method: "POST",
 
-    let response: Response = await fetch("http://localhost:8100", {
+    body: fetchString
+  });
 
-        method: "POST",
+  const answer: string = await response.text();
 
-        body: fetchString
-    });
-
-    let answer: string = await response.text();
-
-    return answer;
+  return answer;
 }
-
-

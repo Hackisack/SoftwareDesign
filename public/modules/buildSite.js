@@ -296,7 +296,6 @@ function searchCustomer() {
                     let adress = document.getElementsByClassName("adress");
                     let discount = document.getElementsByClassName("discount");
                     //Grab HTML Elements after insertion
-                    console.log(foundCustomer.Name);
                     id[0].textContent = foundCustomer.ID;
                     name[0].textContent = foundCustomer.Name;
                     adress[0].textContent = foundCustomer.Adress;
@@ -322,40 +321,44 @@ function searchOrder() {
             if (checkIfFormIsFilled(formData, 1) == true) {
                 let formParams = new URLSearchParams(formData);
                 let usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                let foundOrder = JSON.parse((yield searchOrderComm(usableData)).replace(/%2B/g, " "));
-                if (foundOrder == null) {
+                let foundOrders = JSON.parse((yield searchOrderComm(usableData)).replace(/%2B/g, " "));
+                if (foundOrders.length == 0) {
                     response.innerText = "No Order found";
                 }
                 else {
-                    changeSite.innerHTML = htmlCodeStrings.tableHeaderCustomer;
+                    changeSite.innerHTML = htmlCodeStrings.tableHeaderOrder;
                     //Grab HTML Elements after insertion
                     let table = document.getElementById("table");
                     //Grab HTML Elements after insertion
-                    //Build one table entry
-                    table.innerHTML += htmlCodeStrings.tableBodyCustomer;
-                    //Grab HTML Elements after insertion
-                    let id = document.getElementsByClassName("id");
-                    let description = document.getElementsByClassName("description");
-                    let orderDate = document.getElementsByClassName("orderdate");
-                    let deliveryDate = document.getElementsByClassName("deliverydate");
-                    let price = document.getElementsByClassName("price");
-                    let orderPositions = document.getElementsByClassName("orderpositions");
-                    //Grab HTML Elements after insertion
-                    id[0].textContent = foundOrder.ID;
-                    description[0].textContent = foundOrder.Description;
-                    orderDate[0].textContent = foundOrder.OrderDate.toString();
-                    deliveryDate[0].textContent = foundOrder.DeliveryDate.toString() + " days";
-                    price[0].textContent = foundOrder.Price.toString() + " €";
-                    for (let x = 0; foundOrder.OrderPositions.length < x; x++) {
-                        orderPositions[0].textContent += "Order Position" + x + ": ";
-                        Object.entries(foundOrder.OrderPositions).forEach(([key, value]) => console.log(key, value));
+                    //Build one or more table entrys
+                    for (let x = 0; x < foundOrders.length; x++) {
+                        table.innerHTML += htmlCodeStrings.tableBodyOrder;
+                        //Grab HTML Elements after insertion
+                        let id = document.getElementsByClassName("id");
+                        let description = document.getElementsByClassName("description");
+                        let orderDate = document.getElementsByClassName("orderdate");
+                        let deliveryDate = document.getElementsByClassName("deliverydate");
+                        let price = document.getElementsByClassName("price");
+                        let orderPositions = document.getElementsByClassName("orderpositions");
+                        //Grab HTML Elements after insertion
+                        //Fix Parse Error with Date from Database 
+                        let newOrderDate = new Date(foundOrders[x].OrderDate);
+                        let newDeliveryDate = new Date(foundOrders[x].DeliveryDate);
+                        id[x].textContent = foundOrders[x].ID;
+                        description[x].textContent = foundOrders[x].Description;
+                        orderDate[x].textContent = "Order Date: " + (newOrderDate.getMonth() + 1) + "." + newOrderDate.getDate().toString() + "." + newOrderDate.getFullYear().toString();
+                        deliveryDate[x].textContent = "Delivery Date: " + (newDeliveryDate.getMonth() + 1) + "." + newDeliveryDate.getDate().toString() + "." + newDeliveryDate.getFullYear().toString();
+                        price[x].textContent = foundOrders[x].Price.toString() + " €";
+                        for (let y = 0; y < foundOrders[x].OrderPositions.length; y++) {
+                            orderPositions[x].textContent += " Order Position " + (y + 1) + ": " + foundOrders[x].OrderPositions[y][0].Description + " x " + foundOrders[x].OrderPositions[y][1].Amount + ", ";
+                        }
                     }
                 }
             }
         });
     });
 }
-function createOrder(step, order) {
+function createOrder(step, order, customerName, customerDiscount) {
     return __awaiter(this, void 0, void 0, function* () {
         //Grab HTML Elements before insertion
         let changeSite = document.getElementById("changeSite");
@@ -371,15 +374,28 @@ function createOrder(step, order) {
             //Grab HTML Elements after insertion  
             let allCustomer = JSON.parse((yield allCustomerDataComm()).replace(/%2B/g, " "));
             for (let x = 0; x < allCustomer.length; x++) {
-                customer.innerHTML += "<option >" + allCustomer[x].Name + "</option>";
+                customer.innerHTML += "<option value=" + x + "  >" + allCustomer[x].ID + ",  " + allCustomer[x].Name + "</option>";
             }
             submit.addEventListener("click", function () {
                 return __awaiter(this, void 0, void 0, function* () {
                     let formData = new FormData(form);
-                    if (checkIfFormIsFilled(formData, 3) == true) {
+                    if (checkIfFormIsFilled(formData, 2) == true) {
+                        let order = {
+                            ID: "",
+                            Customer: "",
+                            Description: "",
+                            OrderDate: new Date(),
+                            DeliveryDate: new Date,
+                            Price: 0,
+                            ServerId: ""
+                        };
                         let formParams = new URLSearchParams(formData);
-                        let order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                        createOrder("two", order);
+                        let usableformData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                        order.ID = usableformData.ID;
+                        order.Customer = usableformData.Customer;
+                        order.Description = usableformData.Description;
+                        order.Customer = allCustomer[customer.selectedIndex].ID;
+                        createOrder("two", order, allCustomer[customer.selectedIndex].Name, allCustomer[customer.selectedIndex].Discount);
                     }
                 });
             });
@@ -389,7 +405,7 @@ function createOrder(step, order) {
             let submit = document.getElementById("submit");
             submit.addEventListener("click", function () {
                 if (order.OrderPositions != undefined) {
-                    confirmOrderOverview(order);
+                    confirmOrderOverview(order, customerName, customerDiscount);
                 }
                 else {
                     let response = document.getElementById("response");
@@ -461,12 +477,9 @@ function addAmountToOrder(amountData, productData, productNumber, order) {
     else {
         order.OrderPositions.push([productData[productNumber], amountData]);
     }
-    //initialize Delivery Date
-    order.DeliveryDate = new Date();
-    order.OrderDate = new Date();
     return order;
 }
-function confirmOrderOverview(order) {
+function confirmOrderOverview(order, customerName, customerDiscount) {
     //Grab HTML Elements before insertion
     let changeSite = document.getElementById("changeSite");
     //Grab HTML Elements before insertion
@@ -498,11 +511,12 @@ function confirmOrderOverview(order) {
         }
     }
     orderId.innerText = "Order ID: " + order.ID;
-    orderCustomer.innerText = "Customer: " + order.Customer.toString().replace("+", " ");
+    orderCustomer.innerText = "Customer: " + customerName.replace("+", " ");
     orderDescription.innerText = "Order Description: " + order.Description;
     let time = +highestDelivery;
     order.DeliveryDate.setDate(order.DeliveryDate.getDate() + time);
-    orderDelDate.innerText = "Delivery Date: " + order.DeliveryDate.getDate().toString() + "." + (order.DeliveryDate.getMonth() + 1) + "." + order.DeliveryDate.getFullYear().toString();
+    orderDelDate.innerText = "Delivery Date: " + (order.DeliveryDate.getMonth() + 1) + "." + order.DeliveryDate.getDate().toString() + "." + order.DeliveryDate.getFullYear().toString();
+    console.log(customerDiscount);
     //Calculate price
     let fullPrice = 0;
     for (let x = 0; x < order.OrderPositions.length; x++) {
@@ -511,17 +525,18 @@ function confirmOrderOverview(order) {
         let discount = +order.OrderPositions[x][0].Discount;
         if (order.OrderPositions[x][0].DiscountBG <= order.OrderPositions[x][1].Amount) {
             fullPrice += (price * amount);
-            fullPrice += fullPrice - (fullPrice * (discount / 100));
+            fullPrice = fullPrice - (fullPrice * (discount / 100));
         }
         else {
             fullPrice += price * amount;
         }
         ;
     }
-    order.Price = fullPrice;
-    orderPrice.innerText = fullPrice.toString() + "€";
+    console.log(fullPrice);
+    order.Price = fullPrice - (fullPrice * (customerDiscount / 100));
+    orderPrice.innerText = "Price: " + order.Price.toString() + "€";
     for (let x = 0; x < order.OrderPositions.length; x++) {
-        orderPositions.innerText += "Description: " + order.OrderPositions[x][0].Description + "," + " " + "Amount: " + order.OrderPositions[x][1].Amount;
+        orderPositions.innerText += "Description: " + order.OrderPositions[x][0].Description + "," + " Amount: " + order.OrderPositions[x][1].Amount;
         orderPositions.innerHTML += "<br>";
     }
 }

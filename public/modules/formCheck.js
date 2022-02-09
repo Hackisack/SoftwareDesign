@@ -11,6 +11,12 @@ export function checkIfFormIsFilled(formData, length) {
     return false;
 }
 export function checkIfOrderIsValid(amountData, allData, productNumber) {
+    console.log(amountData.Amount);
+    console.log(allData[productNumber].MinBG);
+    console.log(amountData.Amount);
+    console.log(allData[productNumber].MaxBG);
+    console.log(new Date(allData[productNumber].MEDate));
+    console.log(new Date());
     if (amountData.Amount >= allData[productNumber].MinBG && amountData.Amount <= allData[productNumber].MaxBG && new Date(allData[productNumber].MEDate) <= new Date()) {
         return true;
     }

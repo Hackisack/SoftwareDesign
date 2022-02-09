@@ -1,4 +1,4 @@
-export let loggedInPage: string = ` 
+export const loggedInPage: string = ` 
 
 <h1 id="userName">Welcome</h1>
 <!-- Add Username above -->
@@ -34,8 +34,7 @@ export let loggedInPage: string = `
 <div id="changeSite"></div>
 `;
 
-
-export let addUserPage: string = `
+export const addUserPage: string = `
 
 <h1>Enter the Username and Password for the new User</h1>
 
@@ -56,8 +55,7 @@ export let addUserPage: string = `
 </form>
 `;
 
-
-export let tableHeaderUser: string = `
+export const tableHeaderUser: string = `
 <br>
 <br>
 <table id="table">
@@ -71,17 +69,16 @@ export let tableHeaderUser: string = `
 </table>
 `;
 
-
-export let tableBodyUser: string = `
+export const tableBodyUser: string = `
 
 <tr>
-<td class=\"username\"></td>
-<td class=\"privileges\"></td>
-<td> <button class=\"changeButton\"> Change Admin Privileges </button> </td>
+<td class="username"></td>
+<td class="privileges"></td>
+<td> <button class="changeButton"> Change Admin Privileges </button> </td>
 </tr>
 `;
 
-export let createProduct: string = `
+export const createProduct: string = `
 
 <form id="form" onsubmit="return false">
 
@@ -91,7 +88,7 @@ export let createProduct: string = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
     
-    <label for="MEDate">MEDate:</label><br>
+    <label for="MEDate">MEDate: (mm.dd.yyyy)</label><br>
     <input type="text" name="MEDate" required /><br/><br>
 
     <label for="Price">Price:</label><br>
@@ -121,7 +118,7 @@ export let createProduct: string = `
 </form>
 `;
 
-export let searchProductForm: string = `
+export const searchProductForm: string = `
 
 <form id="form" onsubmit="return false">
 
@@ -137,7 +134,7 @@ export let searchProductForm: string = `
 </form>
 `;
 
-export let tableHeaderProduct: string = `
+export const tableHeaderProduct: string = `
 <br>
 <br>
 <table id="table">
@@ -157,23 +154,22 @@ export let tableHeaderProduct: string = `
 </table>
 `;
 
-
-export let tableBodyProduct: string = `
+export const tableBodyProduct: string = `
 
 <tr>
-<td class=\"id\"></td>
-<td class=\"description\"></td>
-<td class=\"medate\"></td>
-<td class=\"price\"></td>
-<td class=\"standarddeliverytime\"></td>
-<td class=\"minbg\"></td>
-<td class=\"maxbg\"></td>
-<td class=\"discountbg\"></td>
-<td class=\"discount\"></td>
+<td class="id"></td>
+<td class="description"></td>
+<td class="medate"></td>
+<td class="price"></td>
+<td class="standarddeliverytime"></td>
+<td class="minbg"></td>
+<td class="maxbg"></td>
+<td class="discountbg"></td>
+<td class="discount"></td>
 </tr>
 `;
 
-export let createCustomer: string = `
+export const createCustomer: string = `
 
 <form id="form" onsubmit="return false">
 
@@ -198,7 +194,7 @@ export let createCustomer: string = `
 </form>
 `;
 
-export let searchCustomerForm: string = `
+export const searchCustomerForm: string = `
 
 <form id="form" onsubmit="return false">
 
@@ -214,7 +210,7 @@ export let searchCustomerForm: string = `
 </form>
 `;
 
-export let tableHeaderCustomer: string = `
+export const tableHeaderCustomer: string = `
 <br>
 <br>
 <table id="table">
@@ -229,18 +225,17 @@ export let tableHeaderCustomer: string = `
 </table>
 `;
 
-
-export let tableBodyCustomer: string = `
+export const tableBodyCustomer: string = `
 
 <tr>
-<td class=\"id\"></td>
-<td class=\"name\"></td>
-<td class=\"adress\"></td>
-<td class=\"discount\"></td>
+<td class="id"></td>
+<td class="description"></td>
+<td class="adress"></td>
+<td class="discount"></td>
 </tr>
 `;
 
-export let searchOrderForm: string = `
+export const searchOrderForm: string = `
 
 <form id="form" onsubmit="return false">
 
@@ -256,7 +251,7 @@ export let searchOrderForm: string = `
 </form>
 `;
 
-export let tableHeaderOrder: string = `
+export const tableHeaderOrder: string = `
 <br>
 <br>
 <table id="table">
@@ -273,20 +268,19 @@ export let tableHeaderOrder: string = `
 </table>
 `;
 
-
-export let tableBodyOrder: string = `
+export const tableBodyOrder: string = `
 
 <tr>
-<td class=\"id\"></td>
-<td class=\"description\"></td>
-<td class=\"orderdate\"></td>
-<td class=\"deliverydate\"></td>
-<td class=\"price\"></td>
-<td class=\"orderpositions\"></td>
+<td class="id"></td>
+<td class="description"></td>
+<td class="orderdate"></td>
+<td class="deliverydate"></td>
+<td class="price"></td>
+<td class="orderpositions"></td>
 </tr>
 `;
 
-export let createOrderForm: string = `
+export const createOrderForm: string = `
 
 <form id="form" onsubmit="return false">
 
@@ -296,7 +290,9 @@ export let createOrderForm: string = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
 
-    <label for="Customer">Customer:</label><br>
+</form>
+
+<label for="Customer">Customer:</label><br>
     <select id="customer" name="Customer" required>    
     </select>
 
@@ -305,14 +301,13 @@ export let createOrderForm: string = `
 
     <button id="submit">Add products to Order</button>
 
-    <br/><br>
+    <br>
 
     <div id="response"></div>
 
-</form>
 `;
 
-export let tableHeaderCreateOrder: string = `
+export const tableHeaderCreateOrder: string = `
 <br>
 <br>
 <button id="submit">Next Step</button>
@@ -337,32 +332,32 @@ export let tableHeaderCreateOrder: string = `
 </table>
 `;
 
-export let tableBodyCreateOrder: string = `
+export const tableBodyCreateOrder: string = `
 
 <tr>
-<td class=\"id\"></td>
-<td class=\"description\"></td>
-<td class=\"medate\"></td>
-<td class=\"price\"></td>
-<td class=\"standarddeliverytime\"></td>
-<td class=\"minbg\"></td>
-<td class=\"maxbg\"></td>
-<td class=\"discountbg\"></td>
-<td class=\"discount\"></td>
+<td class="id"></td>
+<td class="description"></td>
+<td class="medate"></td>
+<td class="price"></td>
+<td class="standarddeliverytime"></td>
+<td class="minbg"></td>
+<td class="maxbg"></td>
+<td class="discountbg"></td>
+<td class="discount"></td>
 
-<td class=\"form\">
-<form class=\"amount\" onsubmit="return false">
+<td class="form">
+<form class="amount" onsubmit="return false">
 <label for="Amount">Amount:</label><br>
-<input type="text" class=\"amountField\" name="Amount" required /><br/><br>
+<input type="text" class="amountField" name="Amount" required /><br/><br>
 </form>
 <p class="response"></p>
 </td>
 
-<td> <button class=\"addButton\"> Add Amount to Order </button> </td>
+<td> <button class="addButton"> Add Amount to Order </button> </td>
 </tr>
 `;
 
-export let HeaderConfirmOrder: string = `
+export const HeaderConfirmOrder: string = `
 <br>
 <br>
 <h1>Your Order:</h1>
@@ -386,10 +381,9 @@ export let HeaderConfirmOrder: string = `
 
 `;
 
-export let BodyConfirmOrder: string = `
+export const BodyConfirmOrder: string = `
 
     <p id="productDescription">Product Description: </p>
     <p id="productAmount">Amount: </p>
 
 `;
-

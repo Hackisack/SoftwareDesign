@@ -6,7 +6,7 @@ export interface LoginData {
 
 }
 
-export interface ServerRequest {
+export interface ServerId {
 
     ServerId: string;
 
@@ -17,11 +17,12 @@ export interface UserData {
     Username: string;
     Password: string;
     Admin: string;
+    ServerId: string;
 
 }
 
 export interface AdminData {
-    Username: string;  
+    Username: string;
     Admin: string;
     }
 
@@ -35,29 +36,38 @@ export interface Product {
     MaxBG: number;
     DiscountBG: number;
     Discount: number;
+    ServerId: string;
 }
 
 export interface SearchTerm {
     SearchTerm: string;
+    ServerId: string;
+    }
+
+export interface ChangeAdmin {
+    Username: string;
+    ServerId: string;
     }
 
 export interface Customer {
     ID: string;
     Name: string;
-    Adress: string; 
+    Adress: string;
     Discount: number;
-    }
-
-export interface Order {
-    ID: string;
-    Customer: Customer;
-    Description: string;
-    OrderDate: Date;
-    DeliveryDate: Date; 
-    Price: number;
-    OrderPositions: [[Product, Amount]];
+    ServerId: string;
     }
 
 export interface Amount {
-    Amount: number;
+        Amount: number;
+        }
+
+export interface Order {
+    ID: string;
+    Customer: string;
+    Description: string;
+    OrderDate: Date;
+    DeliveryDate: Date;
+    Price: number;
+    OrderPositions?: [[Product, Amount]];
+    ServerId: string;
     }

@@ -1,0 +1,23 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "semi": ["warn", "always"],
+        "quotes": ["warn", "double"],
+        "brace-style": ["warn", "stroustrup"],
+        "eqeqeq": ["error", "smart"]
+    }
+}

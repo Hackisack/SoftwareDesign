@@ -51,9 +51,9 @@ function handleRequest(_request, _response) {
             body += data.toString();
         });
         _request.on("end", () => __awaiter(this, void 0, void 0, function* () {
-            let checkForId = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+            let checkForId = JSON.parse(body);
             if (checkForId.ServerId == "Login") { //Check for Login Data
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -61,7 +61,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "BuildSite") { //Check for Admin Privileges
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -69,7 +69,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "CreateUser") { //Check and create User
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -83,7 +83,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "ChangeAdmin") { //Check and create User
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -91,7 +91,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "CreateProduct") { //Check and create Product
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -99,7 +99,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "SearchProduct") { //SearchProduct
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -107,7 +107,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "CreateCustomer") { //Check and create Product
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -115,7 +115,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "SearchCustomer") { //SearchProduct
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -123,7 +123,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "SearchOrder") { //SearchProduct
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -143,7 +143,7 @@ function handleRequest(_request, _response) {
                 _response.end();
             }
             if (checkForId.ServerId == "CreateOrder") { //Check and create User
-                let usableData = JSON.parse("{\"" + decodeURI(body.replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                let usableData = JSON.parse(body);
                 delete usableData.ServerId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -224,6 +224,8 @@ function createProduct(usableData) {
                 }
             }
         }
+        console.log(usableData.Price);
+        console.log(typeof usableData.Price);
         yield databaseProducts.insertOne(usableData);
         return "true";
     });
@@ -256,7 +258,7 @@ function searchCustomer(usableData) {
 }
 function searchOrder(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let foundOrder = yield databaseOrders.findOne({ $or: [{ "ID": usableData }, { "Description": usableData }] });
+        let foundOrder = yield databaseOrders.find({ $or: [{ "ID": usableData }, { "Description": usableData }] }).toArray();
         return JSON.stringify(foundOrder);
     });
 }

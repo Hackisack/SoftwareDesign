@@ -84,7 +84,7 @@ export let createProduct = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
     
-    <label for="MEDate">MEDate:</label><br>
+    <label for="MEDate">MEDate: (mm.dd.yyyy)</label><br>
     <input type="text" name="MEDate" required /><br/><br>
 
     <label for="Price">Price:</label><br>
@@ -218,7 +218,7 @@ export let tableBodyCustomer = `
 
 <tr>
 <td class=\"id\"></td>
-<td class=\"name\"></td>
+<td class=\"description\"></td>
 <td class=\"adress\"></td>
 <td class=\"discount\"></td>
 </tr>
@@ -275,7 +275,9 @@ export let createOrderForm = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
 
-    <label for="Customer">Customer:</label><br>
+</form>
+
+<label for="Customer">Customer:</label><br>
     <select id="customer" name="Customer" required>    
     </select>
 
@@ -284,11 +286,10 @@ export let createOrderForm = `
 
     <button id="submit">Add products to Order</button>
 
-    <br/><br>
+    <br>
 
     <div id="response"></div>
 
-</form>
 `;
 export let tableHeaderCreateOrder = `
 <br>

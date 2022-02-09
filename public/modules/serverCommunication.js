@@ -10,10 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 //Code
 export function checkLoginOrAdminComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString());
-        fetchString.append("Username", usableData.Username);
-        fetchString.append("Password", usableData.Password);
-        fetchString.append("ServerId", usableData.ServerId);
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -28,11 +25,8 @@ export function checkLoginOrAdminComm(usableData) {
 }
 export function addUserComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString());
-        fetchString.append("Username", usableData.Username);
-        fetchString.append("Password", usableData.Password);
-        fetchString.append("Admin", usableData.Admin);
-        fetchString.append("ServerId", "CreateUser");
+        usableData.ServerId = "CreateUser";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -47,8 +41,10 @@ export function addUserComm(usableData) {
 }
 export function allAdminDataComm() {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams();
-        fetchString.append("ServerId", "AllAdmin");
+        let serverId = {
+            ServerId: "AllAdmin"
+        };
+        let fetchString = JSON.stringify(serverId);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -59,9 +55,11 @@ export function allAdminDataComm() {
 }
 export function changeAdminPrivilegesComm(username) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams();
-        fetchString.append("ServerId", "ChangeAdmin");
-        fetchString.append("Username", username);
+        let serverId = {
+            ServerId: "ChangeAdmin",
+            Username: username
+        };
+        let fetchString = JSON.stringify(serverId);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -72,17 +70,8 @@ export function changeAdminPrivilegesComm(username) {
 }
 export function addProductComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Funktioniert nicht manuell eintragen?
-        fetchString.append("ID", usableData.ID);
-        fetchString.append("Description", usableData.Description);
-        fetchString.append("MEDate", usableData.MEDate.toString());
-        fetchString.append("Price", usableData.Price.toString());
-        fetchString.append("StandardDeliveryTime", usableData.StandardDeliveryTime.toString());
-        fetchString.append("MinBG", usableData.MinBG.toString());
-        fetchString.append("MaxBG", usableData.MaxBG.toString());
-        fetchString.append("DiscountBG", usableData.DiscountBG.toString());
-        fetchString.append("Discount", usableData.Discount.toString());
-        fetchString.append("ServerId", "CreateProduct");
+        usableData.ServerId = "CreateProduct";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -97,9 +86,8 @@ export function addProductComm(usableData) {
 }
 export function searchProductComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString());
-        fetchString.append("SearchTerm", usableData.SearchTerm);
-        fetchString.append("ServerId", "SearchProduct");
+        usableData.ServerId = "SearchProduct";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -114,12 +102,8 @@ export function searchProductComm(usableData) {
 }
 export function addCustomerComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
-        fetchString.append("ID", usableData.ID);
-        fetchString.append("Name", usableData.Name);
-        fetchString.append("Adress", usableData.Adress);
-        fetchString.append("Discount", usableData.Discount.toString());
-        fetchString.append("ServerId", "CreateCustomer");
+        usableData.ServerId = "CreateCustomer";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -134,9 +118,8 @@ export function addCustomerComm(usableData) {
 }
 export function searchCustomerComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString());
-        fetchString.append("SearchTerm", usableData.SearchTerm);
-        fetchString.append("ServerId", "SearchCustomer");
+        usableData.ServerId = "SearchCustomer";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -151,9 +134,8 @@ export function searchCustomerComm(usableData) {
 }
 export function searchOrderComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString());
-        fetchString.append("SearchTerm", usableData.SearchTerm);
-        fetchString.append("ServerId", "SearchOrder");
+        usableData.ServerId = "SearchOrder";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -168,18 +150,8 @@ export function searchOrderComm(usableData) {
 }
 export function createOrderComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams(usableData.toString()); //!!!!!!!!!!!!!!!!!Macht nichts, manuell eintragen?
-        fetchString.append("ID", usableData.ID);
-        fetchString.append("Customer", usableData.Customer.toString());
-        fetchString.append("Description", usableData.Description);
-        fetchString.append("OrderDate", usableData.OrderDate.toString());
-        fetchString.append("DeliveryDate", usableData.DeliveryDate.toString());
-        fetchString.append("Price", usableData.Price.toString());
-        for (let x = 0; x < usableData.OrderPositions.length; x++) {
-            fetchString.append("OrderPositions" + x, usableData.OrderPositions[x][0].ID);
-            fetchString.append("Amount" + x, usableData.OrderPositions[x][1].Amount.toString());
-        }
-        fetchString.append("ServerId", "CreateOrder");
+        usableData.ServerId = "CreateOrder";
+        let fetchString = JSON.stringify(usableData);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -194,8 +166,10 @@ export function createOrderComm(usableData) {
 }
 export function allProductDataComm() {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams();
-        fetchString.append("ServerId", "AllProduct");
+        let serverId = {
+            ServerId: "AllProduct"
+        };
+        let fetchString = JSON.stringify(serverId);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
@@ -206,8 +180,10 @@ export function allProductDataComm() {
 }
 export function allCustomerDataComm() {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = new URLSearchParams();
-        fetchString.append("ServerId", "AllCustomer");
+        let serverId = {
+            ServerId: "AllCustomer"
+        };
+        let fetchString = JSON.stringify(serverId);
         let response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString

@@ -69,10 +69,15 @@ https://de.wikipedia.org/wiki/ABC-Analyse
 
 
 !!!!!!!!!!!!!! 
-0. Order suchen überarbeiten
+0. Order suchen überarbeiten --> Mehrere Order suchen nach Description
+0. Product nach Description suchen können.
+0. Customer nach description suchen können
 1. Bearbeiten einfügen bei suchen
 2. Id einzigartigkeit check überprüfen bevor fortfahren
 3. regex für ID, Username, password
-4. design patterns
+4. Kundenstatistik zu Kunde
+5. design patterns
+
+//Formatierung schön machen
 
 --> Code aufräumen
