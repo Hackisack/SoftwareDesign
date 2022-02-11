@@ -58,6 +58,24 @@ export async function allAdminDataComm (): Promise<string> {
   return answer;
 }
 
+export async function allOrderDataComm (): Promise<string> {
+  const serverId: ServerId = {
+    ServerId: "AllOrder"
+  };
+  const fetchString: string = JSON.stringify(serverId);
+
+  const response: Response = await fetch("http://localhost:8100", {
+
+    method: "POST",
+
+    body: fetchString
+  });
+
+  const answer: string = await response.json();
+
+  return answer;
+}
+
 export async function changeAdminPrivilegesComm (username: string): Promise<string> {
   const serverId: ChangeAdmin = {
     ServerId: "ChangeAdmin",
@@ -112,6 +130,60 @@ export async function searchProductComm (usableData: SearchTerm): Promise<string
     return "empty";
   }
   else return answer;
+}
+
+export async function editProductComm (usableData: Product): Promise<boolean> {
+  usableData.ServerId = "EditProduct";
+  const fetchString: string = JSON.stringify(usableData);
+
+  const response: Response = await fetch("http://localhost:8100", {
+
+    method: "POST",
+
+    body: fetchString
+  });
+
+  const answer: string = await response.text();
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
+}
+
+export async function editOrderComm (usableData: Order): Promise<boolean> {
+  usableData.ServerId = "EditOrder";
+  const fetchString: string = JSON.stringify(usableData);
+
+  const response: Response = await fetch("http://localhost:8100", {
+
+    method: "POST",
+
+    body: fetchString
+  });
+
+  const answer: string = await response.text();
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
+}
+
+export async function editCustomerComm (usableData: Customer): Promise<boolean> {
+  usableData.ServerId = "EditCustomer";
+  const fetchString: string = JSON.stringify(usableData);
+
+  const response: Response = await fetch("http://localhost:8100", {
+
+    method: "POST",
+
+    body: fetchString
+  });
+
+  const answer: string = await response.text();
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }
 
 export async function addCustomerComm (usableData: Customer): Promise<boolean> {

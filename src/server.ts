@@ -227,6 +227,40 @@ function handleRequest (_request: Http.IncomingMessage, _response: Http.ServerRe
         _response.end();
       }
 
+      if (checkForId.ServerId == "EditProduct") { // Check and create User
+        const usableData: Product = JSON.parse(body);
+        delete usableData.ServerId;
+        _response.setHeader("content-type", "text/html; charset=utf-8");
+        _response.setHeader("Access-Control-Allow-Origin", "*");
+        _response.write(await editProduct(usableData));
+        _response.end();
+      }
+
+      if (checkForId.ServerId == "EditCustomer") { // Check and create User
+        const usableData: CustomerData = JSON.parse(body);
+        delete usableData.ServerId;
+        _response.setHeader("content-type", "text/html; charset=utf-8");
+        _response.setHeader("Access-Control-Allow-Origin", "*");
+        _response.write(await editCustomer(usableData));
+        _response.end();
+      }
+
+      if (checkForId.ServerId == "EditOrder") { // Check and create User
+        const usableData: OrderData = JSON.parse(body);
+        delete usableData.ServerId;
+        _response.setHeader("content-type", "text/html; charset=utf-8");
+        _response.setHeader("Access-Control-Allow-Origin", "*");
+        _response.write(await editOrder(usableData));
+        _response.end();
+      }
+
+      if (checkForId.ServerId == "AllOrder") { // Check and create User
+        _response.setHeader("content-type", "text/html; charset=utf-8");
+        _response.setHeader("Access-Control-Allow-Origin", "*");
+        _response.write(await retrieveAllOrder());
+        _response.end();
+      }
+
       if (checkForId.ServerId == "CreateOrder") { // Check and create User
         const usableData: OrderData = JSON.parse(body);
         delete usableData.ServerId;
@@ -290,6 +324,12 @@ async function retrieveAllAdmin (): Promise<string> {
   return JSON.stringify(allData);
 }
 
+async function retrieveAllOrder (): Promise<string> {
+  const allData: OrderData[] = await databaseUser.find({}).toArray() as OrderData[];
+
+  return JSON.stringify(allData);
+}
+
 async function changeAdmin (username: string): Promise<string> {
   const userAdminData: AdminData = await databaseUser.findOne({ Username: username }) as AdminData;
 
@@ -303,6 +343,42 @@ async function changeAdmin (username: string): Promise<string> {
   }
 }
 
+async function editProduct (usableData: Product): Promise<string> {
+  const allData: Product[] = await databaseProducts.find().toArray() as Product[];
+  for (let x: number = 0; x < allData.length; x++) {
+    if (usableData.ID == allData[x].ID) {
+      await databaseProducts.findOneAndDelete({ ID: usableData.ID });
+      await databaseProducts.insertOne(usableData);
+      return "true";
+    }
+  }
+  return "false";
+}
+
+async function editCustomer (usableData: CustomerData): Promise<string> {
+  const allData: CustomerData[] = await databaseCustomers.find().toArray() as CustomerData[];
+  for (let x: number = 0; x < allData.length; x++) {
+    if (usableData.ID == allData[x].ID) {
+      await databaseCustomers.findOneAndDelete({ ID: usableData.ID });
+      await databaseCustomers.insertOne(usableData);
+      return "true";
+    }
+  }
+  return "false";
+}
+
+async function editOrder (usableData: OrderData): Promise<string> {
+  const allData: OrderData[] = await databaseOrders.find().toArray() as OrderData[];
+  for (let x: number = 0; x < allData.length; x++) {
+    if (usableData.ID == allData[x].ID) {
+      await databaseOrders.findOneAndDelete({ ID: usableData.ID });
+      await databaseOrders.insertOne(usableData);
+      return "true";
+    }
+  }
+  return "false";
+}
+
 async function createProduct (usableData: Product): Promise<string> {
   const allData: Product[] = (await databaseProducts.find().toArray()) as Product[];
 
@@ -313,8 +389,6 @@ async function createProduct (usableData: Product): Promise<string> {
       }
     }
   }
-  console.log(usableData.Price);
-  console.log(typeof usableData.Price);
 
   await databaseProducts.insertOne(usableData);
 
@@ -322,7 +396,7 @@ async function createProduct (usableData: Product): Promise<string> {
 }
 
 async function searchProduct (usableData: string): Promise<string> {
-  const foundProduct: Product = await databaseProducts.findOne({ $or: [{ ID: usableData }, { Description: usableData }] }) as Product;
+  const foundProduct: Product[] = await databaseProducts.find({ $or: [{ ID: usableData }, { Description: usableData }] }).toArray() as Product[];
   return JSON.stringify(foundProduct);
 }
 
@@ -343,7 +417,7 @@ async function createCustomer (usableData: CustomerData): Promise<string> {
 }
 
 async function searchCustomer (usableData: string): Promise<string> {
-  const foundCustomer: CustomerData = await databaseCustomers.findOne({ $or: [{ ID: usableData }, { Name: usableData }] }) as CustomerData;
+  const foundCustomer: CustomerData[] = await databaseCustomers.find({ $or: [{ ID: usableData }, { Name: usableData }] }).toArray() as CustomerData[];
   return JSON.stringify(foundCustomer);
 }
 

@@ -7,15 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-//Code
+// Code
 export function checkLoginOrAdminComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == "true") {
             return true;
         }
@@ -26,12 +26,12 @@ export function checkLoginOrAdminComm(usableData) {
 export function addUserComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         usableData.ServerId = "CreateUser";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == "true") {
             return true;
         }
@@ -41,42 +41,56 @@ export function addUserComm(usableData) {
 }
 export function allAdminDataComm() {
     return __awaiter(this, void 0, void 0, function* () {
-        let serverId = {
+        const serverId = {
             ServerId: "AllAdmin"
         };
-        let fetchString = JSON.stringify(serverId);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(serverId);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.json();
+        const answer = yield response.json();
+        return answer;
+    });
+}
+export function allOrderDataComm() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const serverId = {
+            ServerId: "AllOrder"
+        };
+        const fetchString = JSON.stringify(serverId);
+        const response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        const answer = yield response.json();
         return answer;
     });
 }
 export function changeAdminPrivilegesComm(username) {
     return __awaiter(this, void 0, void 0, function* () {
-        let serverId = {
+        const serverId = {
             ServerId: "ChangeAdmin",
             Username: username
         };
-        let fetchString = JSON.stringify(serverId);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(serverId);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         return answer;
     });
 }
 export function addProductComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         usableData.ServerId = "CreateProduct";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == "true") {
             return true;
         }
@@ -87,12 +101,12 @@ export function addProductComm(usableData) {
 export function searchProductComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         usableData.ServerId = "SearchProduct";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == null) {
             return "empty";
         }
@@ -100,15 +114,63 @@ export function searchProductComm(usableData) {
             return answer;
     });
 }
-export function addCustomerComm(usableData) {
+export function editProductComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "CreateCustomer";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        usableData.ServerId = "EditProduct";
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
+        if (answer == "true") {
+            return true;
+        }
+        else
+            return false;
+    });
+}
+export function editOrderComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        usableData.ServerId = "EditOrder";
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        const answer = yield response.text();
+        if (answer == "true") {
+            return true;
+        }
+        else
+            return false;
+    });
+}
+export function editCustomerComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        usableData.ServerId = "EditCustomer";
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        const answer = yield response.text();
+        if (answer == "true") {
+            return true;
+        }
+        else
+            return false;
+    });
+}
+export function addCustomerComm(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        usableData.ServerId = "CreateCustomer";
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        const answer = yield response.text();
         if (answer == "true") {
             return true;
         }
@@ -119,12 +181,12 @@ export function addCustomerComm(usableData) {
 export function searchCustomerComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         usableData.ServerId = "SearchCustomer";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == null) {
             return "empty";
         }
@@ -135,12 +197,12 @@ export function searchCustomerComm(usableData) {
 export function searchOrderComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         usableData.ServerId = "SearchOrder";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == null) {
             return "empty";
         }
@@ -151,12 +213,12 @@ export function searchOrderComm(usableData) {
 export function createOrderComm(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         usableData.ServerId = "CreateOrder";
-        let fetchString = JSON.stringify(usableData);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         if (answer == "true") {
             return true;
         }
@@ -166,29 +228,29 @@ export function createOrderComm(usableData) {
 }
 export function allProductDataComm() {
     return __awaiter(this, void 0, void 0, function* () {
-        let serverId = {
+        const serverId = {
             ServerId: "AllProduct"
         };
-        let fetchString = JSON.stringify(serverId);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(serverId);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.json();
+        const answer = yield response.json();
         return answer;
     });
 }
 export function allCustomerDataComm() {
     return __awaiter(this, void 0, void 0, function* () {
-        let serverId = {
+        const serverId = {
             ServerId: "AllCustomer"
         };
-        let fetchString = JSON.stringify(serverId);
-        let response = yield fetch("http://localhost:8100", {
+        const fetchString = JSON.stringify(serverId);
+        const response = yield fetch("http://localhost:8100", {
             method: "POST",
             body: fetchString
         });
-        let answer = yield response.text();
+        const answer = yield response.text();
         return answer;
     });
 }

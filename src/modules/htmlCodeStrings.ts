@@ -78,6 +78,13 @@ export const tableBodyUser: string = `
 </tr>
 `;
 
+export const editButton: string = `
+
+<button class="editButton"> Edit above </button> 
+<br>
+`;
+
+
 export const createProduct: string = `
 
 <form id="form" onsubmit="return false">
@@ -88,28 +95,65 @@ export const createProduct: string = `
     <label for="Description">Description:</label><br>
     <input type="text" name="Description" required /><br/><br>
     
-    <label for="MEDate">MEDate: (mm.dd.yyyy)</label><br>
-    <input type="text" name="MEDate" required /><br/><br>
+    <label for="MEDate">MEDate: </label><br>
+    <input type="date" name="MEDate" required /><br/><br>
 
     <label for="Price">Price:</label><br>
-    <input type="text" name="Price" required /><br/><br>
+    <input type="number" name="Price" required /><br/><br>
 
     <label for="StandardDeliveryTime">StandardDeliveryTime:</label><br>
-    <input type="text" name="StandardDeliveryTime" required /><br/><br>
+    <input type="number" name="StandardDeliveryTime" required /><br/><br>
 
     <label for="MinBG">MinBG:</label><br>
-    <input type="text" name="MinBG" required /><br/><br>
+    <input type="number" name="MinBG" required /><br/><br>
 
     <label for="MaxBG">MaxBG:</label><br>
-    <input type="text" name="MaxBG" required /><br/><br>
+    <input type="number" name="MaxBG" required /><br/><br>
 
     <label for="DiscountBG">DiscountBG:</label><br>
-    <input type="text" name="DiscountBG" required /><br/><br>
+    <input type="number" name="DiscountBG" required /><br/><br>
 
     <label for="Discount">Discount:</label><br>
-    <input type="text" name="Discount" required /><br/><br>
+    <input type="number" name="Discount" required /><br/><br>
 
     <button id="submit">Create</button>
+
+    <br/><br>
+
+    <div id="response"></div>
+
+</form>
+`;
+
+export const changeProduct: string = `
+
+<form id="form" onsubmit="return false">
+
+    <label for="Description">Description:</label><br>
+    <input type="text" name="Description" required /><br/><br>
+    
+    <label for="MEDate">MEDate: </label><br>
+    <input type="date" name="MEDate" required /><br/><br>
+
+    <label for="Price">Price:</label><br>
+    <input type="number" name="Price" required /><br/><br>
+
+    <label for="StandardDeliveryTime">StandardDeliveryTime:</label><br>
+    <input type="number" name="StandardDeliveryTime" required /><br/><br>
+
+    <label for="MinBG">MinBG:</label><br>
+    <input type="number" name="MinBG" required /><br/><br>
+
+    <label for="MaxBG">MaxBG:</label><br>
+    <input type="number" name="MaxBG" required /><br/><br>
+
+    <label for="DiscountBG">DiscountBG:</label><br>
+    <input type="number" name="DiscountBG" required /><br/><br>
+
+    <label for="Discount">Discount:</label><br>
+    <input type="number" name="Discount" required /><br/><br>
+
+    <button id="submit">Change</button>
 
     <br/><br>
 
@@ -183,9 +227,31 @@ export const createCustomer: string = `
     <input type="text" name="Adress" required /><br/><br>
 
     <label for="Discount">Discount:</label><br>
-    <input type="text" name="Discount" required /><br/><br>
+    <input type="number" name="Discount" required /><br/><br>
 
     <button id="submit">Create</button>
+
+    <br/><br>
+
+    <div id="response"></div>
+
+</form>
+`;
+
+export const changeCustomer: string = `
+
+<form id="form" onsubmit="return false">
+
+    <label for="Name">Name:</label><br>
+    <input type="text" name="Name" required /><br/><br>
+    
+    <label for="Adress">Adress:</label><br>
+    <input type="text" name="Adress" required /><br/><br>
+
+    <label for="Discount">Discount:</label><br>
+    <input type="number" name="Discount" required /><br/><br>
+
+    <button id="submit">Change</button>
 
     <br/><br>
 
@@ -259,6 +325,7 @@ export const tableHeaderOrder: string = `
 <tr>
 <th>ID</th>
 <th>Description</th>
+<th>Customer</th>
 <th>OrderDate</th>
 <th>DeliveryDate</th>
 <th>Price</th>
@@ -273,6 +340,7 @@ export const tableBodyOrder: string = `
 <tr>
 <td class="id"></td>
 <td class="description"></td>
+<td class="customer"></td>
 <td class="orderdate"></td>
 <td class="deliverydate"></td>
 <td class="price"></td>
@@ -381,9 +449,68 @@ export const HeaderConfirmOrder: string = `
 
 `;
 
+export const HeaderChangeOrder: string = `
+<br>
+<br>
+<h1>Your Order:</h1>
+    <br>
+    <h2>Overview:</h2>
+    <h2 id="orderId"></h2>
+    <h2 id="orderCustomer"></h2>
+    <h3 id="description"></h3>
+    <h3 id="deliveryDate"></h3>
+    <h3 id="price"></h3>
+
+    <h2>Order Positions:</h2>
+
+    <div id="orderPositions">
+
+    </div>
+
+    <br>
+
+    <button id="confirm"> Change Order </button>
+
+`;
+
 export const BodyConfirmOrder: string = `
 
     <p id="productDescription">Product Description: </p>
     <p id="productAmount">Amount: </p>
 
+`;
+
+export const changeOrderForm: string = `
+
+<form id="form" onsubmit="return false">
+
+    <label for="Description">Description:</label><br>
+    <input type="text" name="Description" required /><br/><br>
+
+</form>
+
+<label for="Customer">Customer:</label><br>
+    <select id="customer" name="Customer" required>    
+    </select>
+
+    <br>
+    <br>
+
+    <button id="submit">Add products to Order</button>
+
+    <br>
+
+    <div id="response"></div>
+
+`;
+
+export const statisticButton: string = `
+
+<button class="statisticButton"> Statistic for above </button> 
+<br>
+`;
+
+export const statisticProduct: string = `
+
+<p> this product has been ordered x times. Orders have already been placed x times with this item. The total turnover is x.</p>
 `;

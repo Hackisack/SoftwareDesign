@@ -7,22 +7,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-//Module Imports
+/* eslint-disable eqeqeq */
+// Module Imports
 import { startBuilding } from "./modules/buildSite.js";
 import { checkIfFormIsFilled } from "./modules/formCheck.js";
 import * as ServerCommunication from "./modules/serverCommunication.js";
-//Grab HTML-Elements
-let submitButton = document.getElementById("submit");
-let loginForm = document.getElementById("form");
-let responseDiv = document.getElementById("response");
-//Add EventListeners
+// Grab HTML-Elements
+const submitButton = document.getElementById("submit");
+const loginForm = document.getElementById("form");
+const responseDiv = document.getElementById("response");
+// Add EventListeners
 submitButton.addEventListener("click", tryLogin);
-//Code
+// Code
 function tryLogin() {
     return __awaiter(this, void 0, void 0, function* () {
-        let formData = new FormData(loginForm);
-        let formParams = new URLSearchParams(formData);
-        let usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+        const formData = new FormData(loginForm);
+        const formParams = new URLSearchParams(formData);
+        const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
         if (checkIfFormIsFilled(formData, 2) == true) {
             usableData.ServerId = "Login";
             if ((yield ServerCommunication.checkLoginOrAdminComm(usableData)) == true) {

@@ -1,9 +1,9 @@
 export function checkIfFormIsFilled(formData, length) {
     let formFilled = 0;
-    for (let entry of formData.values()) {
+    for (const entry of formData.values()) {
         if (entry != "") {
             formFilled++;
-        } //Alle felder ausgefüllt?
+        } // Alle felder ausgefüllt?
     }
     if (formFilled == length) {
         return true;

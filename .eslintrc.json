@@ -12,7 +12,8 @@
         "ecmaVersion": "latest"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "only-warn"
     ],
     "rules": {
         "semi": ["warn", "always"],
