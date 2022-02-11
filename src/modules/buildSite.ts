@@ -4,7 +4,7 @@
 import { checkIfFormIsFilled, checkIfOrderIsValid } from "./formCheck.js";
 import * as htmlCodeStrings from "./htmlCodeStrings.js";
 import { AdminData, Amount, Customer, LoginData, Order, Product, SearchTerm, UserData } from "./interfaces.js";
-import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
+import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allOrderDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, editCustomerComm, editOrderComm, editProductComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
 
 // Grab HTML-Elements
 const body: HTMLElement = <HTMLElement>document.getElementById("body");
@@ -236,9 +236,9 @@ function searchProduct (): void {
     if (checkIfFormIsFilled(formData, 1) == true) {
       const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
       const usableData: SearchTerm = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-      const foundProduct: Product = JSON.parse((await searchProductComm(usableData)).replace(/%2B/g, " "));
+      const foundProducts: Product[] = JSON.parse((await searchProductComm(usableData)).replace(/%2B/g, " "));
 
-      if (foundProduct == null) {
+      if (foundProducts.length == 0) {
         response.innerText = "No product found";
       }
       else {
@@ -248,30 +248,69 @@ function searchProduct (): void {
         const table: HTMLDivElement = <HTMLDivElement>document.getElementById("table");
         // Grab HTML Elements after insertion
 
-        // Build one table entry
-        table.innerHTML += htmlCodeStrings.tableBodyProduct;
+        for (let x: number = 0; x < foundProducts.length; x++) {
+          // Build one table entry
+          table.innerHTML += htmlCodeStrings.tableBodyProduct;
+          table.innerHTML += htmlCodeStrings.editButton;
+          table.innerHTML += htmlCodeStrings.statisticButton;
 
-        // Grab HTML Elements after insertion
-        const id: HTMLCollection = document.getElementsByClassName("id");
-        const description: HTMLCollection = document.getElementsByClassName("description");
-        const meDate: HTMLCollection = document.getElementsByClassName("medate");
-        const price: HTMLCollection = document.getElementsByClassName("price");
-        const standardDeliveryTime: HTMLCollection = document.getElementsByClassName("standarddeliverytime");
-        const minBG: HTMLCollection = document.getElementsByClassName("minbg");
-        const maxBG: HTMLCollection = document.getElementsByClassName("maxbg");
-        const discountBG: HTMLCollection = document.getElementsByClassName("discountbg");
-        const discount: HTMLCollection = document.getElementsByClassName("discount");
-        // Grab HTML Elements after insertion
+          // Grab HTML Elements after insertion
+          const id: HTMLCollection = document.getElementsByClassName("id");
+          const description: HTMLCollection = document.getElementsByClassName("description");
+          const meDate: HTMLCollection = document.getElementsByClassName("medate");
+          const price: HTMLCollection = document.getElementsByClassName("price");
+          const standardDeliveryTime: HTMLCollection = document.getElementsByClassName("standarddeliverytime");
+          const minBG: HTMLCollection = document.getElementsByClassName("minbg");
+          const maxBG: HTMLCollection = document.getElementsByClassName("maxbg");
+          const discountBG: HTMLCollection = document.getElementsByClassName("discountbg");
+          const discount: HTMLCollection = document.getElementsByClassName("discount");
 
-        id[0].textContent = foundProduct.ID;
-        description[0].textContent = foundProduct.Description;
-        meDate[0].textContent = foundProduct.MEDate.toString();
-        price[0].textContent = foundProduct.Price.toString() + " €";
-        standardDeliveryTime[0].textContent = foundProduct.StandardDeliveryTime.toString() + " days";
-        minBG[0].textContent = foundProduct.MinBG.toString() + " pieces";
-        maxBG[0].textContent = foundProduct.MaxBG.toString() + " pieces";
-        discountBG[0].textContent = foundProduct.DiscountBG.toString() + " pieces";
-        discount[0].textContent = foundProduct.Discount.toString() + " €";
+          // Grab HTML Elements after insertion
+
+          id[x].textContent = foundProducts[x].ID;
+          description[x].textContent = foundProducts[x].Description;
+          meDate[x].textContent = foundProducts[x].MEDate.toString();
+          price[x].textContent = foundProducts[x].Price.toString() + " €";
+          standardDeliveryTime[x].textContent = foundProducts[x].StandardDeliveryTime.toString() + " days";
+          minBG[x].textContent = foundProducts[x].MinBG.toString() + " pieces";
+          maxBG[x].textContent = foundProducts[x].MaxBG.toString() + " pieces";
+          discountBG[x].textContent = foundProducts[x].DiscountBG.toString() + " pieces";
+          discount[x].textContent = foundProducts[x].Discount.toString() + " €";
+        }
+
+        const editBttn: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>> document.getElementsByClassName("editButton");
+        const statisticBttn: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>> document.getElementsByClassName("statisticButton");
+
+        for (let x: number = 0; x < editBttn.length; x++) {
+          editBttn[x].addEventListener("click", async function (): Promise<void> {
+            changeSite.innerHTML = htmlCodeStrings.changeProduct;
+
+            const form: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
+            const submit: HTMLFormElement = <HTMLFormElement>document.getElementById("submit");
+            const response: HTMLButtonElement = <HTMLButtonElement>document.getElementById("response");
+
+            submit.addEventListener("click", async function (): Promise<void> {
+              const formData: FormData = new FormData(form);
+              if (checkIfFormIsFilled(formData, 8) == true) {
+                const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
+                const usableData: Product = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                usableData.ID = foundProducts[x].ID;
+                console.log(usableData.ID);
+
+                if (await editProductComm(usableData) == true) {
+                  response.innerText = "Product changed";
+                }
+                else response.innerText = "Something went wrong. Try again.";
+              }
+            });
+          });
+
+          for (let x: number = 0; x < statisticBttn.length; x++) {
+            statisticBttn[x].addEventListener("click", async function (): Promise<void> {
+              showStatistic("product", foundProducts[x]);
+            });
+          }
+        }
       }
     }
   });
@@ -324,10 +363,9 @@ function searchCustomer (): void {
     if (checkIfFormIsFilled(formData, 1) == true) {
       const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
       const usableData: SearchTerm = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+      const foundCustomers: Customer[] = JSON.parse((await searchCustomerComm(usableData)).replace(/%2B/g, " "));
 
-      const foundCustomer: Customer = JSON.parse((await searchCustomerComm(usableData)).replace(/%2B/g, " "));
-
-      if (foundCustomer == null) {
+      if (foundCustomers.length == 0) {
         response.innerText = "No Customer found";
       }
       else {
@@ -337,19 +375,49 @@ function searchCustomer (): void {
         const table: HTMLDivElement = <HTMLDivElement>document.getElementById("table");
         // Grab HTML Elements after insertion
 
-        // Build one table entry
-        table.innerHTML += htmlCodeStrings.tableBodyCustomer;
+        for (let x: number = 0; x < foundCustomers.length; x++) {
+          // Build one or more table entrys
+          table.innerHTML += htmlCodeStrings.tableBodyCustomer;
+          table.innerHTML += htmlCodeStrings.editButton;
 
-        // Grab HTML Elements after insertion
-        const id: HTMLCollection = document.getElementsByClassName("id");
-        const name: HTMLCollection = document.getElementsByClassName("name");
-        const adress: HTMLCollection = document.getElementsByClassName("adress");
-        const discount: HTMLCollection = document.getElementsByClassName("discount");
-        // Grab HTML Elements after insertion
-        id[0].textContent = foundCustomer.ID;
-        name[0].textContent = foundCustomer.Name;
-        adress[0].textContent = foundCustomer.Adress;
-        discount[0].textContent = foundCustomer.Discount.toString() + " %";
+          // Grab HTML Elements after insertion
+          const id: HTMLCollection = document.getElementsByClassName("id");
+          const name: HTMLCollection = document.getElementsByClassName("description");
+          const adress: HTMLCollection = document.getElementsByClassName("adress");
+          const discount: HTMLCollection = document.getElementsByClassName("discount");
+          // Grab HTML Elements after insertion
+
+          id[x].textContent = foundCustomers[x].ID;
+          name[x].textContent = foundCustomers[x].Name.replace(/[+]/g, " ");
+          adress[x].textContent = foundCustomers[x].Adress.replace(/[+]/g, " ");
+          discount[x].textContent = foundCustomers[x].Discount.toString() + " %";
+        }
+
+        const editBttn: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>> document.getElementsByClassName("editButton");
+
+        for (let x: number = 0; x < editBttn.length; x++) {
+          editBttn[x].addEventListener("click", async function (): Promise<void> {
+            changeSite.innerHTML = htmlCodeStrings.changeCustomer;
+
+            const form: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
+            const submit: HTMLFormElement = <HTMLFormElement>document.getElementById("submit");
+            const response: HTMLButtonElement = <HTMLButtonElement>document.getElementById("response");
+
+            submit.addEventListener("click", async function (): Promise<void> {
+              const formData: FormData = new FormData(form);
+              if (checkIfFormIsFilled(formData, 3) == true) {
+                const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
+                const usableData: Customer = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+                usableData.ID = foundCustomers[x].ID;
+
+                if (await editCustomerComm(usableData) == true) {
+                  response.innerText = "Customer changed";
+                }
+                else response.innerText = "Something went wrong. Try again.";
+              }
+            });
+          });
+        }
       }
     }
   });
@@ -376,6 +444,7 @@ function searchOrder (): void {
       const usableData: SearchTerm = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
 
       const foundOrders: Order[] = JSON.parse((await searchOrderComm(usableData)).replace(/%2B/g, " "));
+      const allCustomer: Customer[] = JSON.parse((await allCustomerDataComm()).replace(/%2B/g, " "));
 
       if (foundOrders.length == 0) {
         response.innerText = "No Order found";
@@ -391,10 +460,12 @@ function searchOrder (): void {
 
         for (let x = 0; x < foundOrders.length; x++) {
           table.innerHTML += htmlCodeStrings.tableBodyOrder;
+          table.innerHTML += htmlCodeStrings.editButton;
 
           // Grab HTML Elements after insertion
           const id: HTMLCollection = document.getElementsByClassName("id");
           const description: HTMLCollection = document.getElementsByClassName("description");
+          const customer: HTMLCollection = document.getElementsByClassName("customer");
           const orderDate: HTMLCollection = document.getElementsByClassName("orderdate");
           const deliveryDate: HTMLCollection = document.getElementsByClassName("deliverydate");
           const price: HTMLCollection = document.getElementsByClassName("price");
@@ -407,12 +478,37 @@ function searchOrder (): void {
 
           id[x].textContent = foundOrders[x].ID;
           description[x].textContent = foundOrders[x].Description;
+
+          let foundCustomerName: string = "";
+          for (let x = 0; x < foundOrders.length; x++) {
+            if (allCustomer[x].ID == foundOrders[x].Customer) {
+              foundCustomerName = allCustomer[x].Name;
+            }
+          }
+
+          let foundCustomerDiscount: number = 0;
+          for (let x = 0; x < foundOrders.length; x++) {
+            if (allCustomer[x].ID == foundOrders[x].Customer) {
+              foundCustomerDiscount = allCustomer[x].Discount;
+            }
+          }
+
+          customer[x].textContent = foundCustomerName;
+
           orderDate[x].textContent = "Order Date: " + (newOrderDate.getMonth() + 1) + "." + newOrderDate.getDate().toString() + "." + newOrderDate.getFullYear().toString();
           deliveryDate[x].textContent = "Delivery Date: " + (newDeliveryDate.getMonth() + 1) + "." + newDeliveryDate.getDate().toString() + "." + newDeliveryDate.getFullYear().toString();
           price[x].textContent = foundOrders[x].Price.toString() + " €";
 
           for (let y: number = 0; y < foundOrders[x].OrderPositions.length; y++) {
             orderPositions[x].textContent += " Order Position " + (y + 1) + ": " + foundOrders[x].OrderPositions[y][0].Description + " x " + foundOrders[x].OrderPositions[y][1].Amount + ", ";
+          }
+
+          const editBttn: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>> document.getElementsByClassName("editButton");
+
+          for (let x: number = 0; x < editBttn.length; x++) {
+            editBttn[x].addEventListener("click", async function (): Promise<void> {
+              changeOrder("one", foundOrders[x].ID, foundOrders[x], foundCustomerName, foundCustomerDiscount);
+            });
           }
         }
       }
@@ -425,16 +521,13 @@ async function createOrder (step: string, order?: Order, customerName?: string, 
   const changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
   // Grab HTML Elements before insertion
 
-  // Reset sessionStorage
-  sessionStorage.clear();
-
   if (step == "one") {
     changeSite.innerHTML = htmlCodeStrings.createOrderForm;
 
     // Grab HTML Elements after insertion
-    const form: HTMLFormElement = <HTMLFormElement> document.getElementById("form");
-    const submit: HTMLButtonElement = <HTMLButtonElement> document.getElementById("submit");
-    const customer: HTMLSelectElement = <HTMLSelectElement> document.getElementById("customer");
+    const form: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
+    const submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
+    const customer: HTMLSelectElement = <HTMLSelectElement>document.getElementById("customer");
     // Grab HTML Elements after insertion
 
     const allCustomer: Customer[] = JSON.parse((await allCustomerDataComm()).replace(/%2B/g, " "));
@@ -548,6 +641,7 @@ async function createOrder (step: string, order?: Order, customerName?: string, 
 }
 
 function addAmountToOrder (amountData: Amount, productData: Product[], productNumber: number, order: Order): Order {
+  console.log(order);
   if (order.OrderPositions == undefined) {
     order.OrderPositions = [[productData[productNumber], amountData]];
   }
@@ -558,12 +652,17 @@ function addAmountToOrder (amountData: Amount, productData: Product[], productNu
   return order;
 }
 
-function confirmOrderOverview (order: Order, customerName:string, customerDiscount: number): void {
+function confirmOrderOverview (order: Order, customerName: string, customerDiscount: number, changeOrder?: boolean): void {
   // Grab HTML Elements before insertion
   const changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
   // Grab HTML Elements before insertion
 
-  changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
+  if (changeOrder == true) {
+    changeSite.innerHTML = htmlCodeStrings.HeaderChangeOrder;
+  }
+  else {
+    changeSite.innerHTML = htmlCodeStrings.HeaderConfirmOrder;
+  }
 
   // Grab HTML Elements after insertion
   const confirmBttn: HTMLDivElement = <HTMLDivElement>document.getElementById("confirm");
@@ -576,11 +675,21 @@ function confirmOrderOverview (order: Order, customerName:string, customerDiscou
   // Grab HTML Elements after insertion
 
   confirmBttn.addEventListener("click", async function (): Promise<void> {
-    if (await createOrderComm(order) == true) {
-      changeSite.innerHTML = "Order added";
+    if (changeOrder == true) {
+      if (await editOrderComm(order) == true) {
+        changeSite.innerHTML = "Order changed";
+      }
+      else {
+        changeSite.innerHTML = "Something went wrong";
+      }
     }
     else {
-      changeSite.innerHTML = "ID already in use";
+      if (await createOrderComm(order) == true) {
+        changeSite.innerHTML = "Order added";
+      }
+      else {
+        changeSite.innerHTML = "ID already in use";
+      }
     }
   });
 
@@ -602,7 +711,6 @@ function confirmOrderOverview (order: Order, customerName:string, customerDiscou
   order.DeliveryDate.setDate(order.DeliveryDate.getDate() + time);
   orderDelDate.innerText = "Delivery Date: " + (order.DeliveryDate.getMonth() + 1) + "." + order.DeliveryDate.getDate().toString() + "." + order.DeliveryDate.getFullYear().toString();
 
-  console.log(customerDiscount);
   // Calculate price
   let fullPrice: number = 0;
   for (let x: number = 0; x < order.OrderPositions.length; x++) {
@@ -626,5 +734,194 @@ function confirmOrderOverview (order: Order, customerName:string, customerDiscou
   for (let x = 0; x < order.OrderPositions.length; x++) {
     orderPositions.innerText += "Description: " + order.OrderPositions[x][0].Description + "," + " Amount: " + order.OrderPositions[x][1].Amount;
     orderPositions.innerHTML += "<br>";
+  }
+}
+
+// change Order
+
+async function changeOrder (step: string, orderId: string, order?: Order, customerName?: string, customerDiscount?: number): Promise<void> {
+  // Grab HTML Elements before insertion
+  const changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
+  // Grab HTML Elements before insertion
+
+  if (step == "one") {
+    changeSite.innerHTML = htmlCodeStrings.changeOrderForm;
+
+    // Grab HTML Elements after insertion
+    const form: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
+    const submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
+    const customer: HTMLSelectElement = <HTMLSelectElement>document.getElementById("customer");
+    // Grab HTML Elements after insertion
+
+    const allCustomer: Customer[] = JSON.parse((await allCustomerDataComm()).replace(/%2B/g, " "));
+
+    for (let x = 0; x < allCustomer.length; x++) {
+      customer.innerHTML += "<option value=" + x + "  >" + allCustomer[x].ID + ",  " + allCustomer[x].Name + "</option>";
+    }
+
+    submit.addEventListener("click", async function (): Promise<void> {
+      const formData: FormData = new FormData(form);
+
+      if (checkIfFormIsFilled(formData, 1) == true) {
+        const order: Order = {
+          ID: "",
+          Customer: "",
+          Description: "",
+          OrderDate: new Date(),
+          DeliveryDate: new Date(),
+          Price: 0,
+          ServerId: ""
+        };
+
+        const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
+        const usableformData: Order = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+        order.ID = orderId;
+        order.Customer = usableformData.Customer;
+        order.Description = usableformData.Description;
+        order.Customer = allCustomer[customer.selectedIndex].ID;
+        changeOrder("two", orderId, order, allCustomer[customer.selectedIndex].Name, allCustomer[customer.selectedIndex].Discount);
+      }
+    });
+  }
+  else if (step == "two") {
+    changeSite.innerHTML = htmlCodeStrings.tableHeaderCreateOrder;
+
+    const submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
+
+    submit.addEventListener("click", function (): void {
+      if (order.OrderPositions != undefined) {
+        console.log("hier");
+        confirmOrderOverview(order, customerName, customerDiscount, true);
+      }
+      else {
+        const response: HTMLParagraphElement = <HTMLParagraphElement>document.getElementById("response");
+        response.innerText = "Please add at least one Position to your Order";
+      }
+    });
+
+    const productData: Product[] = await allProductDataComm();
+
+    // Grab HTML Elements after insertion
+    const table: HTMLDivElement = <HTMLDivElement>document.getElementById("table");
+    // Grab HTML Elements after insertion
+
+    // Build table entrys
+    for (let x: number = 0; x < productData.length; x++) { // Build all Table Entrys
+      table.innerHTML += htmlCodeStrings.tableBodyCreateOrder;
+
+      // Grab HTML Elements after insertion
+      const id: HTMLCollection = document.getElementsByClassName("id");
+      const description: HTMLCollection = document.getElementsByClassName("description");
+      const meDate: HTMLCollection = document.getElementsByClassName("medate");
+      const price: HTMLCollection = document.getElementsByClassName("price");
+      const standardDeliveryTime: HTMLCollection = document.getElementsByClassName("standarddeliverytime");
+      const minBG: HTMLCollection = document.getElementsByClassName("minbg");
+      const maxBG: HTMLCollection = document.getElementsByClassName("maxbg");
+      const discountBG: HTMLCollection = document.getElementsByClassName("discountbg");
+      const discount: HTMLCollection = document.getElementsByClassName("discount");
+
+      // Grab HTML Elements after insertion
+
+      id[x].textContent = productData[x].ID;
+      description[x].textContent = productData[x].Description;
+      meDate[x].textContent = productData[x].MEDate.toString();
+      price[x].textContent = productData[x].Price.toString() + " €";
+      standardDeliveryTime[x].textContent = productData[x].StandardDeliveryTime.toString() + " days";
+      minBG[x].textContent = productData[x].MinBG.toString() + " pieces";
+      maxBG[x].textContent = productData[x].MaxBG.toString() + " pieces";
+      discountBG[x].textContent = productData[x].DiscountBG.toString() + " pieces";
+      discount[x].textContent = productData[x].Discount.toString() + " %";
+    }
+
+    for (let x: number = 0; x < productData.length; x++) {
+      const amount: HTMLCollectionOf<HTMLFormElement> = <HTMLCollectionOf<HTMLFormElement>>document.getElementsByClassName("amount");
+      const button: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>>document.getElementsByClassName("addButton");
+      const amountField: HTMLCollectionOf<HTMLInputElement> = <HTMLCollectionOf<HTMLInputElement>>document.getElementsByClassName("amountField");
+      const response: HTMLCollectionOf<HTMLParagraphElement> = <HTMLCollectionOf<HTMLParagraphElement>>document.getElementsByClassName("response");
+
+      button[x].addEventListener("click", async function (): Promise<void> {
+        const formData: FormData = new FormData(amount[x]);
+        const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
+        const usableformData: Amount = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+
+        if (checkIfFormIsFilled(formData, 1) == true) {
+          if (checkIfOrderIsValid(usableformData, productData, x) == true) {
+            response[x].style.color = "black";
+            amountField[x].value = "";
+            response[x].innerText = "Sucessful added";
+
+            order = addAmountToOrder(usableformData, productData, x, order);
+          }
+          else {
+            response[x].style.color = "red";
+            response[x].style.fontSize = "10pt";
+            amountField[x].value = "";
+            response[x].innerText = "Invalid Amount or ME-Date";
+          }
+        }
+      });
+    }
+  }
+}
+
+async function showStatistic (statisticObject: string, usableData: Product|Customer): Promise<void> {
+  const changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
+  const allOrders: Order[] = JSON.parse(await allOrderDataComm());
+  const allCustomers: Customer[] = JSON.parse(await allCustomerDataComm());
+
+  if (statisticObject == "product") {
+    const newUsableData: Product = <Product> usableData;
+
+    let orderedAmount: number = 0;
+    let orderedOrders: number = 0;
+    let totalTurnover: number = 0;
+    let totalDiscount: number = 0;
+    const customerID: string = "";
+
+    for (let x = 0; x < allOrders.length; x++) {
+      for (let y = 0; y < allOrders[x].OrderPositions.length; y++) {
+        if (allOrders[x].OrderPositions[y][0].ID == newUsableData.ID) {
+          orderedAmount += allOrders[x].OrderPositions[y][1].Amount;
+          if (allOrders[x].OrderPositions[y][1].Amount >= newUsableData.MinBG) {
+            totalDiscount += +newUsableData.Discount;
+          }
+          totalTurnover += allOrders[x].OrderPositions[y][1].Amount * allOrders[x].OrderPositions[y][0].Price;
+          const customerID: string = allOrders[x].Customer;
+        }
+        for (let z = 0; z < allCustomers.length; z++) {
+          if (allCustomers[z].ID == customerID) {
+            totalDiscount += +allCustomers[z].Discount;
+          }
+        }
+      }
+      if (allOrders[x].OrderPositions[0][0].ID == newUsableData.ID) {
+        orderedOrders += 1;
+      }
+    }
+    totalTurnover = totalTurnover - (totalTurnover * (totalDiscount / 100));
+    changeSite.innerHTML = htmlCodeStrings.statisticProduct.replace("x", orderedAmount.toString()).replace("x", orderedOrders.toString()).replace("x", totalTurnover.toString());
+  }
+  else if (statisticObject == "customer") {
+    // 2.2.1.  In dieser Statistik wird gespeichert, welche Artikel vom Kunden in welcher Menge bestellt wurden.
+    // 2.2.2.  Ebenso soll aufgezeigt werden, wie viel Umsatz mit diesem Kunden gemacht wurde.
+    // 2.2.3.  Ebenso soll aufgezeigt werden, wie viel Rabatt dem Kunden auf seine Bestellungen gewährt wurden.
+
+    const newUsableData: Customer = <Customer> usableData;
+
+    let orderedArticles: string = " Ordered Articles: ";
+    let totalTurnover: string = "";
+    let totalDiscount: string = "";
+
+    for (let x = 0; x < allOrders.length; x++) {
+      for (let y: number = 0; allOrders[x].OrderPositions[x].length; y++) {
+        if (allOrders[x].Customer == newUsableData.ID) {
+          orderedArticles += x + ". " + allOrders[x].OrderPositions[y][0].Description + " x " + allOrders[x].OrderPositions[y][1].Amount + ". ";
+        }
+      }
+    }
+    
+    changeSite.innerHTML = orderedArticles;
+    changeSite.innerHTML = totalTurnover;
+    changeSite.innerHTML = totalDiscount;
   }
 }
