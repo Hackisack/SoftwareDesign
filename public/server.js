@@ -174,6 +174,14 @@ function handleRequest(_request, _response) {
                 _response.write(yield retrieveAllOrder());
                 _response.end();
             }
+            if (checkForId.ServerId == "CheckOrderId") { // Check for duplicate Order ID
+                const usableData = JSON.parse(body);
+                delete usableData.ServerId;
+                _response.setHeader("content-type", "text/html; charset=utf-8");
+                _response.setHeader("Access-Control-Allow-Origin", "*");
+                _response.write(yield checkForOrderId(usableData));
+                _response.end();
+            }
             if (checkForId.ServerId == "CreateOrder") { // Check and create User
                 const usableData = JSON.parse(body);
                 delete usableData.ServerId;
@@ -235,7 +243,7 @@ function retrieveAllAdmin() {
 }
 function retrieveAllOrder() {
     return __awaiter(this, void 0, void 0, function* () {
-        const allData = yield databaseUser.find({}).toArray();
+        const allData = yield databaseOrders.find({}).toArray();
         return JSON.stringify(allData);
     });
 }
@@ -360,6 +368,17 @@ function createOrder(usableData) {
             }
         }
         yield databaseOrders.insertOne(usableData);
+        return "true";
+    });
+}
+function checkForOrderId(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const allData = yield databaseOrders.find({}).toArray();
+        for (let x = 0; x < allData.length; x++) {
+            if (allData[x].ID == usableData.SearchTerm) {
+                return "false";
+            }
+        }
         return "true";
     });
 }

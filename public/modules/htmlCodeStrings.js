@@ -31,6 +31,8 @@ export const loggedInPage = `
 
 </nav>
 
+<br>
+
 <div id="changeSite"></div>
 `;
 export const addUserPage = `
@@ -485,6 +487,6 @@ export const statisticButton = `
 `;
 export const statisticProduct = `
 
-<p> this product has been ordered x times. Orders have already been placed x times with this item. The total turnover is x.</p>
+<p> This product has been ordered x times. Orders have already been placed x times with this item. The total turnover is x €.</p>
 `;
 //# sourceMappingURL=htmlCodeStrings.js.map

@@ -12,7 +12,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // module imports
 import { checkIfFormIsFilled, checkIfOrderIsValid } from "./formCheck.js";
 import * as htmlCodeStrings from "./htmlCodeStrings.js";
-import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allOrderDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, editCustomerComm, editOrderComm, editProductComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
+import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allOrderDataComm, allProductDataComm, changeAdminPrivilegesComm, checkForOrderId, checkLoginOrAdminComm, createOrderComm, editCustomerComm, editOrderComm, editProductComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
 // Grab HTML-Elements
 const body = document.getElementById("body");
 // variables
@@ -271,7 +271,6 @@ function searchProduct() {
                                             const formParams = new URLSearchParams(formData);
                                             const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                                             usableData.ID = foundProducts[x].ID;
-                                            console.log(usableData.ID);
                                             if ((yield editProductComm(usableData)) == true) {
                                                 response.innerText = "Product changed";
                                             }
@@ -349,6 +348,7 @@ function searchCustomer() {
                         // Build one or more table entrys
                         table.innerHTML += htmlCodeStrings.tableBodyCustomer;
                         table.innerHTML += htmlCodeStrings.editButton;
+                        table.innerHTML += htmlCodeStrings.statisticButton;
                         // Grab HTML Elements after insertion
                         const id = document.getElementsByClassName("id");
                         const name = document.getElementsByClassName("description");
@@ -361,6 +361,7 @@ function searchCustomer() {
                         discount[x].textContent = foundCustomers[x].Discount.toString() + " %";
                     }
                     const editBttn = document.getElementsByClassName("editButton");
+                    const statisticBttn = document.getElementsByClassName("statisticButton");
                     for (let x = 0; x < editBttn.length; x++) {
                         editBttn[x].addEventListener("click", function () {
                             return __awaiter(this, void 0, void 0, function* () {
@@ -385,6 +386,13 @@ function searchCustomer() {
                                 });
                             });
                         });
+                        for (let x = 0; x < statisticBttn.length; x++) {
+                            statisticBttn[x].addEventListener("click", function () {
+                                return __awaiter(this, void 0, void 0, function* () {
+                                    showStatistic("customer", foundCustomers[x]);
+                                });
+                            });
+                        }
                     }
                 }
             }
@@ -479,6 +487,7 @@ function createOrder(step, order, customerName, customerDiscount) {
             const form = document.getElementById("form");
             const submit = document.getElementById("submit");
             const customer = document.getElementById("customer");
+            const response = document.getElementById("response");
             // Grab HTML Elements after insertion
             const allCustomer = JSON.parse((yield allCustomerDataComm()).replace(/%2B/g, " "));
             for (let x = 0; x < allCustomer.length; x++) {
@@ -487,7 +496,11 @@ function createOrder(step, order, customerName, customerDiscount) {
             submit.addEventListener("click", function () {
                 return __awaiter(this, void 0, void 0, function* () {
                     const formData = new FormData(form);
-                    if (checkIfFormIsFilled(formData, 2) == true) {
+                    const usedId = {
+                        SearchTerm: formData.get("ID").toString(),
+                        ServerId: ""
+                    };
+                    if (checkIfFormIsFilled(formData, 2) == true && (yield checkForOrderId(usedId)) == true) {
                         const order = {
                             ID: "",
                             Customer: "",
@@ -504,6 +517,9 @@ function createOrder(step, order, customerName, customerDiscount) {
                         order.Description = usableformData.Description;
                         order.Customer = allCustomer[customer.selectedIndex].ID;
                         createOrder("two", order, allCustomer[customer.selectedIndex].Name, allCustomer[customer.selectedIndex].Discount);
+                    }
+                    else if (checkIfFormIsFilled(formData, 2) == true && (yield checkForOrderId(usedId)) == false) {
+                        response.innerHTML = "ID already in use. Try with different.";
                     }
                 });
             });
@@ -579,7 +595,6 @@ function createOrder(step, order, customerName, customerDiscount) {
     });
 }
 function addAmountToOrder(amountData, productData, productNumber, order) {
-    console.log(order);
     if (order.OrderPositions == undefined) {
         order.OrderPositions = [[productData[productNumber], amountData]];
     }
@@ -655,7 +670,6 @@ function confirmOrderOverview(order, customerName, customerDiscount, changeOrder
         }
         ;
     }
-    console.log(fullPrice);
     order.Price = fullPrice - (fullPrice * (customerDiscount / 100));
     orderPrice.innerText = "Price: " + order.Price.toString() + "€";
     for (let x = 0; x < order.OrderPositions.length; x++) {
@@ -709,7 +723,6 @@ function changeOrder(step, orderId, order, customerName, customerDiscount) {
             const submit = document.getElementById("submit");
             submit.addEventListener("click", function () {
                 if (order.OrderPositions != undefined) {
-                    console.log("hier");
                     confirmOrderOverview(order, customerName, customerDiscount, true);
                 }
                 else {
@@ -786,16 +799,16 @@ function showStatistic(statisticObject, usableData) {
             let orderedOrders = 0;
             let totalTurnover = 0;
             let totalDiscount = 0;
-            const customerID = "";
+            let customerID = "";
             for (let x = 0; x < allOrders.length; x++) {
                 for (let y = 0; y < allOrders[x].OrderPositions.length; y++) {
                     if (allOrders[x].OrderPositions[y][0].ID == newUsableData.ID) {
-                        orderedAmount += allOrders[x].OrderPositions[y][1].Amount;
+                        orderedAmount += +allOrders[x].OrderPositions[y][1].Amount;
                         if (allOrders[x].OrderPositions[y][1].Amount >= newUsableData.MinBG) {
-                            totalDiscount += +newUsableData.Discount;
+                            totalDiscount = +newUsableData.Discount;
                         }
                         totalTurnover += allOrders[x].OrderPositions[y][1].Amount * allOrders[x].OrderPositions[y][0].Price;
-                        const customerID = allOrders[x].Customer;
+                        customerID = allOrders[x].Customer;
                     }
                     for (let z = 0; z < allCustomers.length; z++) {
                         if (allCustomers[z].ID == customerID) {
@@ -811,23 +824,24 @@ function showStatistic(statisticObject, usableData) {
             changeSite.innerHTML = htmlCodeStrings.statisticProduct.replace("x", orderedAmount.toString()).replace("x", orderedOrders.toString()).replace("x", totalTurnover.toString());
         }
         else if (statisticObject == "customer") {
-            // 2.2.1.  In dieser Statistik wird gespeichert, welche Artikel vom Kunden in welcher Menge bestellt wurden.
-            // 2.2.2.  Ebenso soll aufgezeigt werden, wie viel Umsatz mit diesem Kunden gemacht wurde.
-            // 2.2.3.  Ebenso soll aufgezeigt werden, wie viel Rabatt dem Kunden auf seine Bestellungen gewährt wurden.
             const newUsableData = usableData;
             let orderedArticles = " Ordered Articles: ";
             let totalTurnover = "";
             let totalDiscount = "";
+            let counter = 1;
             for (let x = 0; x < allOrders.length; x++) {
-                for (let y = 0; allOrders[x].OrderPositions[x].length; y++) {
+                for (let y = 0; y < allOrders[x].OrderPositions.length; y++) {
                     if (allOrders[x].Customer == newUsableData.ID) {
-                        orderedArticles += x + ". " + allOrders[x].OrderPositions[y][0].Description + " x " + allOrders[x].OrderPositions[y][1].Amount + ". ";
+                        orderedArticles += counter + ". " + allOrders[x].OrderPositions[y][0].Description + " x " + allOrders[x].OrderPositions[y][1].Amount + ". ";
+                        counter++;
+                        totalTurnover += allOrders[x].Price;
+                        totalDiscount += +(allOrders[x].OrderPositions[y][1].Amount * allOrders[x].OrderPositions[y][0].Price) - allOrders[x].Price;
                     }
                 }
             }
             changeSite.innerHTML = orderedArticles;
-            changeSite.innerHTML = totalTurnover;
-            changeSite.innerHTML = totalDiscount;
+            changeSite.innerHTML += "<br>" + "Total Customer turnover: " + totalTurnover + ". " + "<br>";
+            changeSite.innerHTML += "Total given Discount in €: " + totalDiscount;
         }
     });
 }

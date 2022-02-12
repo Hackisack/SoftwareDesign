@@ -71,7 +71,7 @@ export async function allOrderDataComm (): Promise<string> {
     body: fetchString
   });
 
-  const answer: string = await response.json();
+  const answer: string = await response.text();
 
   return answer;
 }
@@ -294,4 +294,23 @@ export async function allCustomerDataComm (): Promise<string> {
   const answer: string = await response.text();
 
   return answer;
+}
+
+export async function checkForOrderId (usableData: SearchTerm): Promise<boolean> {
+  usableData.ServerId = "CheckOrderId";
+  const fetchString: string = JSON.stringify(usableData);
+
+  const response: Response = await fetch("http://localhost:8100", {
+
+    method: "POST",
+
+    body: fetchString
+  });
+
+  const answer: string = await response.text();
+
+  if (answer == "true") {
+    return true;
+  }
+  else return false;
 }

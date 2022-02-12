@@ -31,6 +31,8 @@ export const loggedInPage: string = `
 
 </nav>
 
+<br>
+
 <div id="changeSite"></div>
 `;
 
@@ -83,7 +85,6 @@ export const editButton: string = `
 <button class="editButton"> Edit above </button> 
 <br>
 `;
-
 
 export const createProduct: string = `
 
@@ -512,5 +513,5 @@ export const statisticButton: string = `
 
 export const statisticProduct: string = `
 
-<p> this product has been ordered x times. Orders have already been placed x times with this item. The total turnover is x.</p>
+<p> This product has been ordered x times. Orders have already been placed x times with this item. The total turnover is x €.</p>
 `;

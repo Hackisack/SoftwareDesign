@@ -261,6 +261,15 @@ function handleRequest (_request: Http.IncomingMessage, _response: Http.ServerRe
         _response.end();
       }
 
+      if (checkForId.ServerId == "CheckOrderId") { // Check for duplicate Order ID
+        const usableData: SearchTerm = JSON.parse(body);
+        delete usableData.ServerId;
+        _response.setHeader("content-type", "text/html; charset=utf-8");
+        _response.setHeader("Access-Control-Allow-Origin", "*");
+        _response.write(await checkForOrderId(usableData));
+        _response.end();
+      }
+
       if (checkForId.ServerId == "CreateOrder") { // Check and create User
         const usableData: OrderData = JSON.parse(body);
         delete usableData.ServerId;
@@ -325,7 +334,7 @@ async function retrieveAllAdmin (): Promise<string> {
 }
 
 async function retrieveAllOrder (): Promise<string> {
-  const allData: OrderData[] = await databaseUser.find({}).toArray() as OrderData[];
+  const allData: OrderData[] = await databaseOrders.find({}).toArray() as OrderData[];
 
   return JSON.stringify(allData);
 }
@@ -449,6 +458,18 @@ async function createOrder (usableData: OrderData): Promise<string> {
     }
   }
   await databaseOrders.insertOne(usableData);
+
+  return "true";
+}
+
+async function checkForOrderId (usableData: SearchTerm): Promise<string> {
+  const allData: OrderData[] = await databaseOrders.find({}).toArray() as OrderData[];
+
+  for (let x = 0; x < allData.length; x++) {
+    if (allData[x].ID == usableData.SearchTerm) {
+      return "false";
+    }
+  }
 
   return "true";
 }

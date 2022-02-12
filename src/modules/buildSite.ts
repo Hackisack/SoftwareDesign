@@ -4,7 +4,7 @@
 import { checkIfFormIsFilled, checkIfOrderIsValid } from "./formCheck.js";
 import * as htmlCodeStrings from "./htmlCodeStrings.js";
 import { AdminData, Amount, Customer, LoginData, Order, Product, SearchTerm, UserData } from "./interfaces.js";
-import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allOrderDataComm, allProductDataComm, changeAdminPrivilegesComm, checkLoginOrAdminComm, createOrderComm, editCustomerComm, editOrderComm, editProductComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
+import { addCustomerComm, addProductComm, addUserComm, allAdminDataComm, allCustomerDataComm, allOrderDataComm, allProductDataComm, changeAdminPrivilegesComm, checkForOrderId, checkLoginOrAdminComm, createOrderComm, editCustomerComm, editOrderComm, editProductComm, searchCustomerComm, searchOrderComm, searchProductComm } from "./serverCommunication.js";
 
 // Grab HTML-Elements
 const body: HTMLElement = <HTMLElement>document.getElementById("body");
@@ -295,7 +295,6 @@ function searchProduct (): void {
                 const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
                 const usableData: Product = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                 usableData.ID = foundProducts[x].ID;
-                console.log(usableData.ID);
 
                 if (await editProductComm(usableData) == true) {
                   response.innerText = "Product changed";
@@ -379,6 +378,7 @@ function searchCustomer (): void {
           // Build one or more table entrys
           table.innerHTML += htmlCodeStrings.tableBodyCustomer;
           table.innerHTML += htmlCodeStrings.editButton;
+          table.innerHTML += htmlCodeStrings.statisticButton;
 
           // Grab HTML Elements after insertion
           const id: HTMLCollection = document.getElementsByClassName("id");
@@ -394,6 +394,7 @@ function searchCustomer (): void {
         }
 
         const editBttn: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>> document.getElementsByClassName("editButton");
+        const statisticBttn: HTMLCollectionOf<HTMLButtonElement> = <HTMLCollectionOf<HTMLButtonElement>> document.getElementsByClassName("statisticButton");
 
         for (let x: number = 0; x < editBttn.length; x++) {
           editBttn[x].addEventListener("click", async function (): Promise<void> {
@@ -417,6 +418,12 @@ function searchCustomer (): void {
               }
             });
           });
+
+          for (let x: number = 0; x < statisticBttn.length; x++) {
+            statisticBttn[x].addEventListener("click", async function (): Promise<void> {
+              showStatistic("customer", foundCustomers[x]);
+            });
+          }
         }
       }
     }
@@ -528,6 +535,7 @@ async function createOrder (step: string, order?: Order, customerName?: string, 
     const form: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
     const submit: HTMLButtonElement = <HTMLButtonElement>document.getElementById("submit");
     const customer: HTMLSelectElement = <HTMLSelectElement>document.getElementById("customer");
+    const response: HTMLDivElement = <HTMLDivElement>document.getElementById("response");
     // Grab HTML Elements after insertion
 
     const allCustomer: Customer[] = JSON.parse((await allCustomerDataComm()).replace(/%2B/g, " "));
@@ -539,7 +547,12 @@ async function createOrder (step: string, order?: Order, customerName?: string, 
     submit.addEventListener("click", async function (): Promise<void> {
       const formData: FormData = new FormData(form);
 
-      if (checkIfFormIsFilled(formData, 2) == true) {
+      const usedId: SearchTerm = {
+        SearchTerm: formData.get("ID").toString(),
+        ServerId: ""
+      };
+
+      if (checkIfFormIsFilled(formData, 2) == true && await checkForOrderId(usedId) == true) {
         const order: Order = {
           ID: "",
           Customer: "",
@@ -557,6 +570,9 @@ async function createOrder (step: string, order?: Order, customerName?: string, 
         order.Description = usableformData.Description;
         order.Customer = allCustomer[customer.selectedIndex].ID;
         createOrder("two", order, allCustomer[customer.selectedIndex].Name, allCustomer[customer.selectedIndex].Discount);
+      }
+      else if (checkIfFormIsFilled(formData, 2) == true && await checkForOrderId(usedId) == false) {
+        response.innerHTML = "ID already in use. Try with different.";
       }
     });
   }
@@ -641,7 +657,6 @@ async function createOrder (step: string, order?: Order, customerName?: string, 
 }
 
 function addAmountToOrder (amountData: Amount, productData: Product[], productNumber: number, order: Order): Order {
-  console.log(order);
   if (order.OrderPositions == undefined) {
     order.OrderPositions = [[productData[productNumber], amountData]];
   }
@@ -726,7 +741,6 @@ function confirmOrderOverview (order: Order, customerName: string, customerDisco
       fullPrice += price * amount;
     };
   }
-  console.log(fullPrice);
   order.Price = fullPrice - (fullPrice * (customerDiscount / 100));
 
   orderPrice.innerText = "Price: " + order.Price.toString() + "€";
@@ -790,7 +804,6 @@ async function changeOrder (step: string, orderId: string, order?: Order, custom
 
     submit.addEventListener("click", function (): void {
       if (order.OrderPositions != undefined) {
-        console.log("hier");
         confirmOrderOverview(order, customerName, customerDiscount, true);
       }
       else {
@@ -876,17 +889,17 @@ async function showStatistic (statisticObject: string, usableData: Product|Custo
     let orderedOrders: number = 0;
     let totalTurnover: number = 0;
     let totalDiscount: number = 0;
-    const customerID: string = "";
+    let customerID: string = "";
 
     for (let x = 0; x < allOrders.length; x++) {
       for (let y = 0; y < allOrders[x].OrderPositions.length; y++) {
         if (allOrders[x].OrderPositions[y][0].ID == newUsableData.ID) {
-          orderedAmount += allOrders[x].OrderPositions[y][1].Amount;
+          orderedAmount += +allOrders[x].OrderPositions[y][1].Amount;
           if (allOrders[x].OrderPositions[y][1].Amount >= newUsableData.MinBG) {
-            totalDiscount += +newUsableData.Discount;
+            totalDiscount = +newUsableData.Discount;
           }
           totalTurnover += allOrders[x].OrderPositions[y][1].Amount * allOrders[x].OrderPositions[y][0].Price;
-          const customerID: string = allOrders[x].Customer;
+          customerID = allOrders[x].Customer;
         }
         for (let z = 0; z < allCustomers.length; z++) {
           if (allCustomers[z].ID == customerID) {
@@ -902,26 +915,26 @@ async function showStatistic (statisticObject: string, usableData: Product|Custo
     changeSite.innerHTML = htmlCodeStrings.statisticProduct.replace("x", orderedAmount.toString()).replace("x", orderedOrders.toString()).replace("x", totalTurnover.toString());
   }
   else if (statisticObject == "customer") {
-    // 2.2.1.  In dieser Statistik wird gespeichert, welche Artikel vom Kunden in welcher Menge bestellt wurden.
-    // 2.2.2.  Ebenso soll aufgezeigt werden, wie viel Umsatz mit diesem Kunden gemacht wurde.
-    // 2.2.3.  Ebenso soll aufgezeigt werden, wie viel Rabatt dem Kunden auf seine Bestellungen gewährt wurden.
-
     const newUsableData: Customer = <Customer> usableData;
 
     let orderedArticles: string = " Ordered Articles: ";
     let totalTurnover: string = "";
     let totalDiscount: string = "";
+    let counter: number = 1;
 
     for (let x = 0; x < allOrders.length; x++) {
-      for (let y: number = 0; allOrders[x].OrderPositions[x].length; y++) {
+      for (let y: number = 0; y < allOrders[x].OrderPositions.length; y++) {
         if (allOrders[x].Customer == newUsableData.ID) {
-          orderedArticles += x + ". " + allOrders[x].OrderPositions[y][0].Description + " x " + allOrders[x].OrderPositions[y][1].Amount + ". ";
+          orderedArticles += counter + ". " + allOrders[x].OrderPositions[y][0].Description + " x " + allOrders[x].OrderPositions[y][1].Amount + ". ";
+          counter++;
+          totalTurnover += allOrders[x].Price;
+          totalDiscount += +(allOrders[x].OrderPositions[y][1].Amount * allOrders[x].OrderPositions[y][0].Price) - allOrders[x].Price;
         }
       }
     }
-    
+
     changeSite.innerHTML = orderedArticles;
-    changeSite.innerHTML = totalTurnover;
-    changeSite.innerHTML = totalDiscount;
+    changeSite.innerHTML += "<br>" + "Total Customer turnover: " + totalTurnover + ". " + "<br>";
+    changeSite.innerHTML += "Total given Discount in €: " + totalDiscount;
   }
 }

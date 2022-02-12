@@ -63,7 +63,7 @@ export function allOrderDataComm() {
             method: "POST",
             body: fetchString
         });
-        const answer = yield response.json();
+        const answer = yield response.text();
         return answer;
     });
 }
@@ -252,6 +252,22 @@ export function allCustomerDataComm() {
         });
         const answer = yield response.text();
         return answer;
+    });
+}
+export function checkForOrderId(usableData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        usableData.ServerId = "CheckOrderId";
+        const fetchString = JSON.stringify(usableData);
+        const response = yield fetch("http://localhost:8100", {
+            method: "POST",
+            body: fetchString
+        });
+        const answer = yield response.text();
+        if (answer == "true") {
+            return true;
+        }
+        else
+            return false;
     });
 }
 //# sourceMappingURL=serverCommunication.js.map
