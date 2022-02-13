@@ -222,7 +222,7 @@ export const createCustomer: string = `
     <label for="Adress">Adress:</label><br>
     <input type="text" name="adress" required /><br/><br>
 
-    <label for="Discount">Discount:</label><br>
+    <label for="Discount">Discount (in %, only number):</label><br>
     <input type="number" name="discount" required /><br/><br>
 
     <button id="submit">Create</button>
