@@ -19,6 +19,7 @@
         "semi": ["warn", "always"],
         "quotes": ["warn", "double"],
         "brace-style": ["warn", "stroustrup"],
-        "eqeqeq": ["error", "smart"]
+        "eqeqeq": ["off", "smart"],
+        "no-undef":["off"]
     }
 }

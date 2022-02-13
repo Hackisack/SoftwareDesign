@@ -7,267 +7,285 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// Code
-export function checkLoginOrAdminComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
+export class ServerCommunication {
+    // check either for Login validity or for Admin privileges
+    checkLoginOrAdminComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
         });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function addUserComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "CreateUser";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
+    }
+    // Add user
+    addUserComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "CreateUser";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
         });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function allAdminDataComm() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const serverId = {
-            ServerId: "AllAdmin"
-        };
-        const fetchString = JSON.stringify(serverId);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.json();
-        return answer;
-    });
-}
-export function allOrderDataComm() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const serverId = {
-            ServerId: "AllOrder"
-        };
-        const fetchString = JSON.stringify(serverId);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        return answer;
-    });
-}
-export function changeAdminPrivilegesComm(username) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const serverId = {
-            ServerId: "ChangeAdmin",
-            Username: username
-        };
-        const fetchString = JSON.stringify(serverId);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        return answer;
-    });
-}
-export function addProductComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "CreateProduct";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function searchProductComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "SearchProduct";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        if (answer == null) {
-            return "empty";
-        }
-        else
+    }
+    // Return all Admin Data
+    allAdminDataComm() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverId = {
+                serverId: "AllAdmin"
+            };
+            const fetchString = JSON.stringify(serverId);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
             return answer;
-    });
-}
-export function editProductComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "EditProduct";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
         });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function editOrderComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "EditOrder";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function editCustomerComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "EditCustomer";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function addCustomerComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "CreateCustomer";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function searchCustomerComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "SearchCustomer";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
-        });
-        const answer = yield response.text();
-        if (answer == null) {
-            return "empty";
-        }
-        else
+    }
+    // Return all Order Data
+    allOrderDataComm() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverId = {
+                serverId: "AllOrder"
+            };
+            const fetchString = JSON.stringify(serverId);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
             return answer;
-    });
-}
-export function searchOrderComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "SearchOrder";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
         });
-        const answer = yield response.text();
-        if (answer == null) {
-            return "empty";
-        }
-        else
+    }
+    // Change Admin Privileges of User
+    changeAdminPrivilegesComm(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverId = {
+                serverId: "ChangeAdmin",
+                username: username
+            };
+            const fetchString = JSON.stringify(serverId);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
             return answer;
-    });
-}
-export function createOrderComm(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "CreateOrder";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
         });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
-}
-export function allProductDataComm() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const serverId = {
-            ServerId: "AllProduct"
-        };
-        const fetchString = JSON.stringify(serverId);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
+    }
+    // Add Product
+    addProductComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "CreateProduct";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
         });
-        const answer = yield response.json();
-        return answer;
-    });
-}
-export function allCustomerDataComm() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const serverId = {
-            ServerId: "AllCustomer"
-        };
-        const fetchString = JSON.stringify(serverId);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
+    }
+    // Search Product
+    searchProductComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "SearchProduct";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == null) {
+                return "empty";
+            }
+            else
+                return answer;
         });
-        const answer = yield response.text();
-        return answer;
-    });
-}
-export function checkForOrderId(usableData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        usableData.ServerId = "CheckOrderId";
-        const fetchString = JSON.stringify(usableData);
-        const response = yield fetch("http://localhost:8100", {
-            method: "POST",
-            body: fetchString
+    }
+    // Edit Product
+    editProductComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "EditProduct";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
         });
-        const answer = yield response.text();
-        if (answer == "true") {
-            return true;
-        }
-        else
-            return false;
-    });
+    }
+    // Edit Order
+    editOrderComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "EditOrder";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
+        });
+    }
+    // Edit Customer
+    editCustomerComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "EditCustomer";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
+        });
+    }
+    // Add Customer
+    addCustomerComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "CreateCustomer";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
+        });
+    }
+    // Search Customer
+    searchCustomerComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "SearchCustomer";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == null) {
+                return "empty";
+            }
+            else
+                return answer;
+        });
+    }
+    // Search Order
+    searchOrderComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "SearchOrder";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == null) {
+                return "empty";
+            }
+            else
+                return answer;
+        });
+    }
+    // Create Order
+    createOrderComm(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "CreateOrder";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
+        });
+    }
+    // Return all Products
+    allProductDataComm() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverId = {
+                serverId: "AllProduct"
+            };
+            const fetchString = JSON.stringify(serverId);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            return answer;
+        });
+    }
+    // Return all Customers
+    allCustomerDataComm() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const serverId = {
+                serverId: "AllCustomer"
+            };
+            const fetchString = JSON.stringify(serverId);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            return answer;
+        });
+    }
+    // Check for duplicate Order Id
+    checkForOrderId(usableData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            usableData.serverId = "CheckOrderId";
+            const fetchString = JSON.stringify(usableData);
+            const response = yield fetch("http://localhost:8100", {
+                method: "POST",
+                body: fetchString
+            });
+            const answer = yield response.text();
+            if (answer == "true") {
+                return true;
+            }
+            else
+                return false;
+        });
+    }
 }
 //# sourceMappingURL=serverCommunication.js.map

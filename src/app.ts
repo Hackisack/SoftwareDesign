@@ -1,29 +1,33 @@
-/* eslint-disable eqeqeq */
 // Module Imports
-import { startBuilding } from "./modules/buildSite.js";
-import { checkIfFormIsFilled } from "./modules/formCheck.js";
+import { BuildSite } from "./modules/buildSite.js";
+import { FormCheck } from "./modules/formCheck.js";
 import { LoginData } from "./modules/interfaces.js";
-import * as ServerCommunication from "./modules/serverCommunication.js";
+import { ServerCommunication } from "./modules/serverCommunication.js";
 
 // Grab HTML-Elements
 const submitButton: HTMLButtonElement = <HTMLButtonElement> document.getElementById("submit");
 const loginForm: HTMLFormElement = <HTMLFormElement>document.getElementById("form");
 const responseDiv: HTMLDivElement = <HTMLDivElement>document.getElementById("response");
 
+// New Instance of ServerCommunication
+export const communication: ServerCommunication = new ServerCommunication();
+
 // Add EventListeners
 submitButton.addEventListener("click", tryLogin);
 
-// Code
+// Login Check --> If sucessful --> start building HTML Page
 async function tryLogin (): Promise<void> {
+  // get User Input
   const formData: FormData = new FormData(loginForm);
   const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
+  // parse User Input into Object
   const usableData: LoginData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
+  // check for filled Form fields and valid login information
+  if (FormCheck.checkIfFormIsFilled(formData, 2) == true) {
+    usableData.serverId = "Login";
 
-  if (checkIfFormIsFilled(formData, 2) == true) {
-    usableData.ServerId = "Login";
-
-    if (await ServerCommunication.checkLoginOrAdminComm(usableData) == true) {
-      startBuilding(usableData);
+    if (await communication.checkLoginOrAdminComm(usableData) == true) {
+      BuildSite.startBuilding(usableData);
     }
     else responseDiv.innerText = "Login failed. Please try again!";
   }

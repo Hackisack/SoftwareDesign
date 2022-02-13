@@ -7,28 +7,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-/* eslint-disable eqeqeq */
 // import modules
 import * as Http from "http";
 import * as Mongo from "mongodb";
+// define different Databases
 let databaseUser;
 let databaseProducts;
 let databaseCustomers;
 let databaseOrders;
+// define port number if run local
 let port = Number(process.env.PORT);
 if (!port) {
     port = 8100;
 }
+// Database Connectionstring
 const databaseUrl = "mongodb+srv://test-user:hhtkDpO0wsSZ4V4Q@giswise2020.wgtcu.mongodb.net/Data?retryWrites=true&w=majority";
 startServer(port);
 connectToDatabase(databaseUrl);
+// start Server and display Port
 function startServer(_port) {
     const server = Http.createServer();
-    console.log("Server auf: " + _port);
+    console.log("Server at: " + _port);
     server.addListener("request", handleRequest);
     server.addListener("listening", handleListen);
     server.listen(_port);
 }
+// await connection to Database and Collections and display status
 function connectToDatabase(_url) {
     return __awaiter(this, void 0, void 0, function* () {
         const mongoClient = new Mongo.MongoClient(_url);
@@ -43,148 +47,153 @@ function connectToDatabase(_url) {
         console.log("CollectionOrders connection ", databaseOrders != undefined);
     });
 }
+// listen for incoming requests
 function handleListen() {
     console.log("Listening");
 }
+// handle incoming requests
 function handleRequest(_request, _response) {
+    // get request data
     if (_request.method == "POST") {
         let body = "";
         _request.on("data", data => {
             body += data.toString();
         });
+        // choose suitable function and write response for request
         _request.on("end", () => __awaiter(this, void 0, void 0, function* () {
             const checkForId = JSON.parse(body);
-            if (checkForId.ServerId == "Login") { // Check for Login Data
+            // check for given serverId and choose right function
+            if (checkForId.serverId == "Login") { // Check for Login Data
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield checkForLogin(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "BuildSite") { // Check for Admin Privileges
+            if (checkForId.serverId == "BuildSite") { // Check for Admin Privileges
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield checkForAdmin(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "CreateUser") { // Check and create User
+            if (checkForId.serverId == "CreateUser") { // Check for duplicate id and create User
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield createUser(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "AllAdmin") { // Check and create User
+            if (checkForId.serverId == "AllAdmin") { // return all Users
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield retrieveAllAdmin());
                 _response.end();
             }
-            if (checkForId.ServerId == "ChangeAdmin") { // Check and create User
+            if (checkForId.serverId == "ChangeAdmin") { // Change Admin privileges
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
-                _response.write(yield changeAdmin(usableData.Username));
+                _response.write(yield changeAdmin(usableData.username));
                 _response.end();
             }
-            if (checkForId.ServerId == "CreateProduct") { // Check and create Product
+            if (checkForId.serverId == "CreateProduct") { //  Check for duplicate id and create Product
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield createProduct(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "SearchProduct") { // SearchProduct
+            if (checkForId.serverId == "SearchProduct") { // Search for product
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
-                _response.write(yield searchProduct(usableData.SearchTerm));
+                _response.write(yield searchProduct(usableData.searchTerm));
                 _response.end();
             }
-            if (checkForId.ServerId == "CreateCustomer") { // Check and create Product
+            if (checkForId.serverId == "CreateCustomer") { //  Check for duplicate id and create Customer
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield createCustomer(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "SearchCustomer") { // SearchProduct
+            if (checkForId.serverId == "SearchCustomer") { // Search for Customer
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
-                _response.write(yield searchCustomer(usableData.SearchTerm));
+                _response.write(yield searchCustomer(usableData.searchTerm));
                 _response.end();
             }
-            if (checkForId.ServerId == "SearchOrder") { // SearchProduct
+            if (checkForId.serverId == "SearchOrder") { // Search for Order
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
-                _response.write(yield searchOrder(usableData.SearchTerm));
+                _response.write(yield searchOrder(usableData.searchTerm));
                 _response.end();
             }
-            if (checkForId.ServerId == "AllProduct") { // Check and create User
+            if (checkForId.serverId == "AllProduct") { // retrieve all Products
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield retrieveAllProduct());
                 _response.end();
             }
-            if (checkForId.ServerId == "AllCustomer") { // Check and create User
+            if (checkForId.serverId == "AllCustomer") { // retrieve all Customer
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield retrieveAllCustomer());
                 _response.end();
             }
-            if (checkForId.ServerId == "EditProduct") { // Check and create User
+            if (checkForId.serverId == "EditProduct") { // edit specific Product
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield editProduct(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "EditCustomer") { // Check and create User
+            if (checkForId.serverId == "EditCustomer") { // edit specific Customer
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield editCustomer(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "EditOrder") { // Check and create User
+            if (checkForId.serverId == "EditOrder") { // edit specific Order
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield editOrder(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "AllOrder") { // Check and create User
+            if (checkForId.serverId == "AllOrder") { // retrieve all Orders
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield retrieveAllOrder());
                 _response.end();
             }
-            if (checkForId.ServerId == "CheckOrderId") { // Check for duplicate Order ID
+            if (checkForId.serverId == "CheckOrderId") { // Check for duplicate Order ID before creation
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield checkForOrderId(usableData));
                 _response.end();
             }
-            if (checkForId.ServerId == "CreateOrder") { // Check and create User
+            if (checkForId.serverId == "CreateOrder") { // Create Order
                 const usableData = JSON.parse(body);
-                delete usableData.ServerId;
+                delete usableData.serverId;
                 _response.setHeader("content-type", "text/html; charset=utf-8");
                 _response.setHeader("Access-Control-Allow-Origin", "*");
                 _response.write(yield createOrder(usableData));
@@ -193,12 +202,13 @@ function handleRequest(_request, _response) {
         }));
     }
 }
+// check if Login Data is in Database
 function checkForLogin(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = (yield databaseUser.find({}).toArray());
         if (allData.length >= 1) {
             for (let x = 0; x < allData.length; x++) {
-                if (allData[x].Username == usableData.Username && (allData[x].Password == usableData.Password)) {
+                if (allData[x].username == usableData.username && (allData[x].password == usableData.password)) {
                     return "true";
                 }
             }
@@ -206,13 +216,14 @@ function checkForLogin(usableData) {
         return "false";
     });
 }
+// check if User is Admin
 function checkForAdmin(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const adminData = (yield databaseUser.find({}).toArray());
         if (adminData.length >= 1) {
             for (let x = 0; x < adminData.length; x++) {
-                if (adminData[x].Username == usableData.Username) {
-                    if (adminData[x].Admin == "true") {
+                if (adminData[x].username == usableData.username) {
+                    if (adminData[x].admin == "true") {
                         return "true";
                     }
                 }
@@ -221,12 +232,13 @@ function checkForAdmin(usableData) {
         return "false";
     });
 }
+// create User if no Username is duplicate
 function createUser(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = (yield databaseUser.find().toArray());
         if (allData.length >= 1) {
             for (let x = 0; x < allData.length; x++) {
-                if (allData[x].Username == usableData.Username) {
+                if (allData[x].username == usableData.username) {
                     return "false";
                 }
             }
@@ -235,37 +247,41 @@ function createUser(usableData) {
         return "true";
     });
 }
+// return all User
 function retrieveAllAdmin() {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseUser.find({}).toArray();
         return JSON.stringify(allData);
     });
 }
+// return all Orders
 function retrieveAllOrder() {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseOrders.find({}).toArray();
         return JSON.stringify(allData);
     });
 }
+// change Admin privileges
 function changeAdmin(username) {
     return __awaiter(this, void 0, void 0, function* () {
-        const userAdminData = yield databaseUser.findOne({ Username: username });
-        if (userAdminData.Admin == "true") {
-            yield databaseUser.findOneAndUpdate({ Username: username }, { $set: { Admin: "false" } });
+        const userAdminData = yield databaseUser.findOne({ username: username });
+        if (userAdminData.admin == "true") {
+            yield databaseUser.findOneAndUpdate({ username: username }, { $set: { admin: "false" } });
             return "false";
         }
         else {
-            yield databaseUser.findOneAndUpdate({ Username: username }, { $set: { Admin: "true" } });
+            yield databaseUser.findOneAndUpdate({ username: username }, { $set: { admin: "true" } });
             return "true";
         }
     });
 }
+// edit Product --> delete old entry and replace with new
 function editProduct(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseProducts.find().toArray();
         for (let x = 0; x < allData.length; x++) {
-            if (usableData.ID == allData[x].ID) {
-                yield databaseProducts.findOneAndDelete({ ID: usableData.ID });
+            if (usableData.id == allData[x].id) {
+                yield databaseProducts.findOneAndDelete({ id: usableData.id });
                 yield databaseProducts.insertOne(usableData);
                 return "true";
             }
@@ -273,11 +289,12 @@ function editProduct(usableData) {
         return "false";
     });
 }
+// edit Customer --> delete old entry and replace with new
 function editCustomer(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseCustomers.find().toArray();
         for (let x = 0; x < allData.length; x++) {
-            if (usableData.ID == allData[x].ID) {
+            if (usableData.id == allData[x].id) {
                 yield databaseCustomers.findOneAndDelete({ ID: usableData.ID });
                 yield databaseCustomers.insertOne(usableData);
                 return "true";
@@ -286,12 +303,13 @@ function editCustomer(usableData) {
         return "false";
     });
 }
+// edit Order --> delete old entry and replace with new
 function editOrder(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseOrders.find().toArray();
         for (let x = 0; x < allData.length; x++) {
-            if (usableData.ID == allData[x].ID) {
-                yield databaseOrders.findOneAndDelete({ ID: usableData.ID });
+            if (usableData.id == allData[x].id) {
+                yield databaseOrders.findOneAndDelete({ id: usableData.id });
                 yield databaseOrders.insertOne(usableData);
                 return "true";
             }
@@ -299,12 +317,13 @@ function editOrder(usableData) {
         return "false";
     });
 }
+// create Product if no Id is duplicate
 function createProduct(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = (yield databaseProducts.find().toArray());
         if (allData.length >= 1) {
             for (let x = 0; x < allData.length; x++) {
-                if (allData[x].ID == usableData.ID) {
+                if (allData[x].id == usableData.id) {
                     return "false";
                 }
             }
@@ -313,18 +332,20 @@ function createProduct(usableData) {
         return "true";
     });
 }
+// search for Product
 function searchProduct(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const foundProduct = yield databaseProducts.find({ $or: [{ ID: usableData }, { Description: usableData }] }).toArray();
+        const foundProduct = yield databaseProducts.find({ $or: [{ id: usableData }, { description: usableData }] }).toArray();
         return JSON.stringify(foundProduct);
     });
 }
+// create Customer if no Id is duplicate
 function createCustomer(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = (yield databaseCustomers.find().toArray());
         if (allData.length >= 1) {
             for (let x = 0; x < allData.length; x++) {
-                if (allData[x].ID == usableData.ID) {
+                if (allData[x].id == usableData.id) {
                     return "false";
                 }
             }
@@ -333,36 +354,41 @@ function createCustomer(usableData) {
         return "true";
     });
 }
+// search for Customer
 function searchCustomer(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const foundCustomer = yield databaseCustomers.find({ $or: [{ ID: usableData }, { Name: usableData }] }).toArray();
+        const foundCustomer = yield databaseCustomers.find({ $or: [{ id: usableData }, { name: usableData }] }).toArray();
         return JSON.stringify(foundCustomer);
     });
 }
+// search for Order
 function searchOrder(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const foundOrder = yield databaseOrders.find({ $or: [{ ID: usableData }, { Description: usableData }] }).toArray();
+        const foundOrder = yield databaseOrders.find({ $or: [{ id: usableData }, { description: usableData }] }).toArray();
         return JSON.stringify(foundOrder);
     });
 }
+// return all Products
 function retrieveAllProduct() {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseProducts.find({}).toArray();
         return JSON.stringify(allData);
     });
 }
+// return all Customers
 function retrieveAllCustomer() {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseCustomers.find({}).toArray();
         return JSON.stringify(allData);
     });
 }
+// create Order if no Id is duplicate
 function createOrder(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = (yield databaseOrders.find().toArray());
         if (allData.length >= 1) {
             for (let x = 0; x < allData.length; x++) {
-                if (allData[x].ID == usableData.ID) {
+                if (allData[x].id == usableData.id) {
                     return "false";
                 }
             }
@@ -371,11 +397,12 @@ function createOrder(usableData) {
         return "true";
     });
 }
+// check for duplicate Order Id
 function checkForOrderId(usableData) {
     return __awaiter(this, void 0, void 0, function* () {
         const allData = yield databaseOrders.find({}).toArray();
         for (let x = 0; x < allData.length; x++) {
-            if (allData[x].ID == usableData.SearchTerm) {
+            if (allData[x].ID == usableData.searchTerm) {
                 return "false";
             }
         }

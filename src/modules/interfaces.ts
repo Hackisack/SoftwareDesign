@@ -1,73 +1,34 @@
+// Interfaces are stored here --> Names show there usage
+
 export interface LoginData {
 
-    Username: string;
-    Password: string;
-    ServerId: string;
+    username: string;
+    password: string;
+    serverId: string;
 
 }
 
 export interface ServerId {
 
-    ServerId: string;
-
-}
-
-export interface UserData {
-
-    Username: string;
-    Password: string;
-    Admin: string;
-    ServerId: string;
+    serverId: string;
 
 }
 
 export interface AdminData {
-    Username: string;
-    Admin: string;
+    username: string;
+    admin: string;
     }
 
-export interface Product {
-    ID: string;
-    Description: string;
-    MEDate: Date;
-    Price: number;
-    StandardDeliveryTime: number;
-    MinBG: number;
-    MaxBG: number;
-    DiscountBG: number;
-    Discount: number;
-    ServerId: string;
-}
-
 export interface SearchTerm {
-    SearchTerm: string;
-    ServerId: string;
+    searchTerm: string;
+    serverId: string;
     }
 
 export interface ChangeAdmin {
-    Username: string;
-    ServerId: string;
-    }
-
-export interface Customer {
-    ID: string;
-    Name: string;
-    Adress: string;
-    Discount: number;
-    ServerId: string;
+    username: string;
+    serverId: string;
     }
 
 export interface Amount {
-        Amount: number;
+    amount: number;
         }
-
-export interface Order {
-    ID: string;
-    Customer: string;
-    Description: string;
-    OrderDate: Date;
-    DeliveryDate: Date;
-    Price: number;
-    OrderPositions?: [[Product, Amount]];
-    ServerId: string;
-    }

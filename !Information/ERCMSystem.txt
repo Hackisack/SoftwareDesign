@@ -69,9 +69,9 @@ https://de.wikipedia.org/wiki/ABC-Analyse
 
 
 !!!!!!!!!!!!!! 
-3. regex für ID, Username, password
 5. design patterns
 6. unit test
-7. in classen aufteilen
+7. Kommentieren
+8. MEDate check fixxen
 
 --> Code aufräumen

@@ -1,35 +1,50 @@
-/* eslint-disable eqeqeq */
-import { Amount, Product } from "./interfaces";
+import { Amount } from "./interfaces.js";
+import { Product } from "./product.js";
 
-export function checkIfFormIsFilled (formData: FormData, length: number): boolean {
-  let formFilled:number = 0;
+export class FormCheck {
+  // check if every entry in form Data is filled
+  static checkIfFormIsFilled (formData: FormData, length: number): boolean {
+    let formFilled:number = 0;
 
-  for (const entry of formData.values()) {
-    if (entry != "") {
-      formFilled++;
-    } // Alle felder ausgefüllt?
+    for (const entry of formData.values()) {
+      if (entry != "") {
+        formFilled++;
+      }
+    }
+
+    if (formFilled == length) {
+      return true;
+    }
+
+    return false;
   }
 
-  if (formFilled == length) {
-    return true;
+  // check if if the wanted position can be added to the order
+  static checkIfOrderIsValid (amountData: Amount, allData:Product[], productNumber: number): boolean {
+    if (+amountData.amount >= +allData[productNumber].minBG && +amountData.amount <= +allData[productNumber].maxBG && new Date(allData[productNumber].meDate).getTime() <= new Date().getTime()) {
+      return true;
+    }
+
+    return false;
   }
 
-  return false;
-}
+  // check if entered data fits the Regex
+  static checkForRegex (formData: FormData, checkFor: string): boolean {
+    if (checkFor == "usernameAndPassword") {
+      const regExUser: RegExp = /^[A-Za-z]+$/;
+      const regExPassword: RegExp = /^(?=.*\d).{4,8}$/;
+      if (regExUser.test(formData.get("username").toString()) == true && regExPassword.test(formData.get("password").toString()) == true) {
+        return true;
+      };
+    }
 
-export function checkIfOrderIsValid (amountData: Amount, allData:Product[], productNumber: number): boolean {
-  console.log(amountData.Amount);
-  console.log(allData[productNumber].MinBG);
+    if (checkFor == "ID") {
+      const regEx: RegExp = /[A-Z]{3}[1-9]{3}/;
+      if (regEx.test(formData.get("id").toString()) == true) {
+        return true;
+      };
+    }
 
-  console.log(amountData.Amount);
-  console.log(allData[productNumber].MaxBG);
-
-  console.log(new Date(allData[productNumber].MEDate));
-  console.log(new Date());
-
-  if (amountData.Amount >= allData[productNumber].MinBG && amountData.Amount <= allData[productNumber].MaxBG && new Date(allData[productNumber].MEDate) <= new Date()) {
-    return true;
+    return false;
   }
-
-  return false;
 }

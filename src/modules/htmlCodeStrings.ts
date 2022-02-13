@@ -1,3 +1,5 @@
+// HTML Strings to change the Site are stored here --> Names of the Strings show there usage
+
 export const loggedInPage: string = ` 
 
 <h1 id="userName">Welcome</h1>
@@ -8,24 +10,18 @@ export const loggedInPage: string = `
 <nav id ="navigation">
 
     <button class="buttonStyle" id="addUser">Add new User (Admin)</button>
-    <!-- Disable If not Admin -->
 
     <button class="buttonStyle" id="changeAdmin">Change Admin Privileges (Admin)</button>
-    <!-- Disable If not Admin -->
 
     <button class="buttonStyle" id="addProduct">Add new Product (Admin)</button>
-    <!-- Disable If not Admin -->
 
     <button class="buttonStyle" id="searchProduct">Search for Product</button>
-    <!-- And change Product if needed -->
 
     <button class="buttonStyle" id="searchCustomer">Search for Customer</button>
-    <!-- And change Customer if needed -->
-
-    <button class="buttonStyle" id="addCustomer">Add new Customer</button>
 
     <button class="buttonStyle" id="searchOrder">Search for Order</button>
-    <!-- And change Order if needed -->
+
+    <button class="buttonStyle" id="addCustomer">Add new Customer</button>
 
     <button class="buttonStyle" id="createOrder">Create new Order</button>
 
@@ -43,13 +39,13 @@ export const addUserPage: string = `
 <form id="form" onsubmit="return false">
 
     <label for="Username">Username:</label><br>
-    <input type="text" name="Username" required /><br/><br>
+    <input type="text" name="username" required /><br/><br>
 
     <label for="Password">Password:</label><br>
-    <input autocomplete="on" type="password" name="Password" required /><br/><br>
+    <input autocomplete="on" type="password" name="password" required /><br/><br>
 
     <label for="Admin">Admin ("true" or "false"):</label><br>
-    <input type="text" name="Admin" required /><br/><br>
+    <input type="text" name="admin" required /><br/><br>
 
     <button id="submit">Create</button>
     <br/><br>
@@ -83,7 +79,6 @@ export const tableBodyUser: string = `
 export const editButton: string = `
 
 <button class="editButton"> Edit above </button> 
-<br>
 `;
 
 export const createProduct: string = `
@@ -91,31 +86,31 @@ export const createProduct: string = `
 <form id="form" onsubmit="return false">
 
     <label for="ID">ID:</label><br>
-    <input type="text" name="ID" required /><br/><br>
+    <input type="text" name="id" required /><br/><br>
 
     <label for="Description">Description:</label><br>
-    <input type="text" name="Description" required /><br/><br>
+    <input type="text" name="description" required /><br/><br>
     
     <label for="MEDate">MEDate: </label><br>
-    <input type="date" name="MEDate" required /><br/><br>
+    <input type="date" name="meDate" required /><br/><br>
 
     <label for="Price">Price:</label><br>
-    <input type="number" name="Price" required /><br/><br>
+    <input type="number" name="price" required /><br/><br>
 
     <label for="StandardDeliveryTime">StandardDeliveryTime:</label><br>
-    <input type="number" name="StandardDeliveryTime" required /><br/><br>
+    <input type="number" name="standardDeliveryTime" required /><br/><br>
 
     <label for="MinBG">MinBG:</label><br>
-    <input type="number" name="MinBG" required /><br/><br>
+    <input type="number" name="minBG" required /><br/><br>
 
     <label for="MaxBG">MaxBG:</label><br>
-    <input type="number" name="MaxBG" required /><br/><br>
+    <input type="number" name="maxBG" required /><br/><br>
 
     <label for="DiscountBG">DiscountBG:</label><br>
-    <input type="number" name="DiscountBG" required /><br/><br>
+    <input type="number" name="discountBG" required /><br/><br>
 
     <label for="Discount">Discount:</label><br>
-    <input type="number" name="Discount" required /><br/><br>
+    <input type="number" name="discount" required /><br/><br>
 
     <button id="submit">Create</button>
 
@@ -131,28 +126,28 @@ export const changeProduct: string = `
 <form id="form" onsubmit="return false">
 
     <label for="Description">Description:</label><br>
-    <input type="text" name="Description" required /><br/><br>
+    <input type="text" name="description" required /><br/><br>
     
     <label for="MEDate">MEDate: </label><br>
-    <input type="date" name="MEDate" required /><br/><br>
+    <input type="date" name="meDate" required /><br/><br>
 
     <label for="Price">Price:</label><br>
-    <input type="number" name="Price" required /><br/><br>
+    <input type="number" name="price" required /><br/><br>
 
     <label for="StandardDeliveryTime">StandardDeliveryTime:</label><br>
-    <input type="number" name="StandardDeliveryTime" required /><br/><br>
+    <input type="number" name="standardDeliveryTime" required /><br/><br>
 
     <label for="MinBG">MinBG:</label><br>
-    <input type="number" name="MinBG" required /><br/><br>
+    <input type="number" name="minBG" required /><br/><br>
 
     <label for="MaxBG">MaxBG:</label><br>
-    <input type="number" name="MaxBG" required /><br/><br>
+    <input type="number" name="maxBG" required /><br/><br>
 
     <label for="DiscountBG">DiscountBG:</label><br>
-    <input type="number" name="DiscountBG" required /><br/><br>
+    <input type="number" name="discountBG" required /><br/><br>
 
     <label for="Discount">Discount:</label><br>
-    <input type="number" name="Discount" required /><br/><br>
+    <input type="number" name="discount" required /><br/><br>
 
     <button id="submit">Change</button>
 
@@ -168,7 +163,7 @@ export const searchProductForm: string = `
 <form id="form" onsubmit="return false">
 
     <label for="SearchTerm">Search Term:</label><br>
-    <input type="text" name="SearchTerm" required /><br/><br>
+    <input type="text" name="searchTerm" required /><br/><br>
 
     <button id="submit">Search</button>
 
@@ -219,16 +214,16 @@ export const createCustomer: string = `
 <form id="form" onsubmit="return false">
 
     <label for="ID">ID:</label><br>
-    <input type="text" name="ID" required /><br/><br>
+    <input type="text" name="id" required /><br/><br>
 
     <label for="Name">Name:</label><br>
-    <input type="text" name="Name" required /><br/><br>
+    <input type="text" name="name" required /><br/><br>
     
     <label for="Adress">Adress:</label><br>
-    <input type="text" name="Adress" required /><br/><br>
+    <input type="text" name="adress" required /><br/><br>
 
     <label for="Discount">Discount:</label><br>
-    <input type="number" name="Discount" required /><br/><br>
+    <input type="number" name="discount" required /><br/><br>
 
     <button id="submit">Create</button>
 
@@ -244,13 +239,13 @@ export const changeCustomer: string = `
 <form id="form" onsubmit="return false">
 
     <label for="Name">Name:</label><br>
-    <input type="text" name="Name" required /><br/><br>
+    <input type="text" name="name" required /><br/><br>
     
     <label for="Adress">Adress:</label><br>
-    <input type="text" name="Adress" required /><br/><br>
+    <input type="text" name="adress" required /><br/><br>
 
     <label for="Discount">Discount:</label><br>
-    <input type="number" name="Discount" required /><br/><br>
+    <input type="number" name="discount" required /><br/><br>
 
     <button id="submit">Change</button>
 
@@ -266,7 +261,7 @@ export const searchCustomerForm: string = `
 <form id="form" onsubmit="return false">
 
     <label for="SearchTerm">Search Term:</label><br>
-    <input type="text" name="SearchTerm" required /><br/><br>
+    <input type="text" name="searchTerm" required /><br/><br>
 
     <button id="submit">Search</button>
 
@@ -307,7 +302,7 @@ export const searchOrderForm: string = `
 <form id="form" onsubmit="return false">
 
     <label for="SearchTerm">Search Term:</label><br>
-    <input type="text" name="SearchTerm" required /><br/><br>
+    <input type="text" name="searchTerm" required /><br/><br>
 
     <button id="submit">Search</button>
 
@@ -354,15 +349,15 @@ export const createOrderForm: string = `
 <form id="form" onsubmit="return false">
 
     <label for="ID">ID:</label><br>
-    <input type="text" name="ID" required /><br/><br>
+    <input type="text" name="id" required /><br/><br>
 
     <label for="Description">Description:</label><br>
-    <input type="text" name="Description" required /><br/><br>
+    <input type="text" name="description" required /><br/><br>
 
 </form>
 
 <label for="Customer">Customer:</label><br>
-    <select id="customer" name="Customer" required>    
+    <select id="customer" name="customer" required>    
     </select>
 
     <br>
@@ -417,7 +412,7 @@ export const tableBodyCreateOrder: string = `
 <td class="form">
 <form class="amount" onsubmit="return false">
 <label for="Amount">Amount:</label><br>
-<input type="text" class="amountField" name="Amount" required /><br/><br>
+<input type="text" class="amountField" name="amount" required /><br/><br>
 </form>
 <p class="response"></p>
 </td>
@@ -486,12 +481,12 @@ export const changeOrderForm: string = `
 <form id="form" onsubmit="return false">
 
     <label for="Description">Description:</label><br>
-    <input type="text" name="Description" required /><br/><br>
+    <input type="text" name="description" required /><br/><br>
 
 </form>
 
 <label for="Customer">Customer:</label><br>
-    <select id="customer" name="Customer" required>    
+    <select id="customer" name="customer" required>    
     </select>
 
     <br>
@@ -508,7 +503,6 @@ export const changeOrderForm: string = `
 export const statisticButton: string = `
 
 <button class="statisticButton"> Statistic for above </button> 
-<br>
 `;
 
 export const statisticProduct: string = `
