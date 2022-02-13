@@ -16,6 +16,9 @@ const submitButton = document.getElementById("submit");
 const loginForm = document.getElementById("form");
 const responseDiv = document.getElementById("response");
 export class Main {
+    static getInstance() {
+        return this.instance || (this.instance = new this());
+    }
     // Add Event Listener
     addEventListener() {
         submitButton.addEventListener("click", this.tryLogin);

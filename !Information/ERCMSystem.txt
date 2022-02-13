@@ -65,10 +65,3 @@ Die Rolle des Benutzers:
 Bonus: Für eine Firma ist es immens wichtig eine ABC-Analyse über ein Artikel- und Kundenportfolio machen zu können.
 Eine Darstellung einer ABC-Analyse über die bestehenden Artikel- und Kundenumsätze wäre hierbei sehr hilfreich:
 https://de.wikipedia.org/wiki/ABC-Analyse
-
-
-
-!!!!!!!!!!!!!! 
-5. design patterns 1. Iterator (value of formData) 2. Fabric (Dont build Object with new Constructor. Instead e.g. call Order.createOrder())
-7. Diagramme
-8. Readme

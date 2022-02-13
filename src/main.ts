@@ -10,6 +10,12 @@ const loginForm: HTMLFormElement = <HTMLFormElement>document.getElementById("for
 const responseDiv: HTMLDivElement = <HTMLDivElement>document.getElementById("response");
 
 export class Main {
+  private static instance: Main;
+
+  public static getInstance (): Main {
+    return this.instance || (this.instance = new this());
+  }
+
   // Add Event Listener
   addEventListener (): void {
     submitButton.addEventListener("click", this.tryLogin);
