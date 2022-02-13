@@ -1,8 +1,8 @@
-// module imports
-import { communication } from "../app.js";
+// Module Imports
 import { FormCheck } from "./formCheck.js";
 import { changeProduct, createProduct, editButton, searchProductForm, statisticButton, tableBodyProduct, tableHeaderProduct } from "./htmlCodeStrings.js";
 import { SearchTerm } from "./interfaces.js";
+import { ServerCommunication } from "./serverCommunication.js";
 import { ShowStatistic } from "./showStatistic.js";
 
 export class Product {
@@ -47,16 +47,16 @@ export class Product {
       const formData: FormData = new FormData(form);
 
       // check for filled Form and Regex --> if true add Product
-      if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData, "ID") == true) {
+      if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == true) {
         const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
         const usableData: Product = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
 
-        if (await communication.addProductComm(usableData) == true) {
+        if (await ServerCommunication.addProductComm(usableData) == true) {
           response.innerText = "Product added";
         }
         else response.innerText = "ID already in use. Retry with different ID";
       }
-      else if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData, "ID") == false) {
+      else if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == false) {
         response.innerText = "ID must consist of three uppercase letters followed by three numbers.";
       }
     });
@@ -82,7 +82,7 @@ export class Product {
       if (FormCheck.checkIfFormIsFilled(formData, 1) == true) {
         const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
         const usableData: SearchTerm = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-        const foundProducts: Product[] = JSON.parse((await communication.searchProductComm(usableData)).replace(/%2B/g, " "));
+        const foundProducts: Product[] = JSON.parse((await ServerCommunication.searchProductComm(usableData)).replace(/%2B/g, " "));
 
         if (foundProducts.length == 0) {
           response.innerText = "No product found";
@@ -148,7 +148,7 @@ export class Product {
                   const usableData: Product = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                   usableData.id = foundProducts[x].id;
 
-                  if (await communication.editProductComm(usableData) == true) {
+                  if (await ServerCommunication.editProductComm(usableData) == true) {
                     response.innerText = "Product changed";
                   }
                   else response.innerText = "Something went wrong. Try again.";

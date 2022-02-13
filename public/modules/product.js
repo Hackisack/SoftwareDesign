@@ -7,10 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// module imports
-import { communication } from "../app.js";
+// Module Imports
 import { FormCheck } from "./formCheck.js";
 import { changeProduct, createProduct, editButton, searchProductForm, statisticButton, tableBodyProduct, tableHeaderProduct } from "./htmlCodeStrings.js";
+import { ServerCommunication } from "./serverCommunication.js";
 import { ShowStatistic } from "./showStatistic.js";
 export class Product {
     constructor(id, description, meDate, price, standardDeliveryTime, minBG, maxBG, discountBG, discount, serverId) {
@@ -39,16 +39,16 @@ export class Product {
             return __awaiter(this, void 0, void 0, function* () {
                 const formData = new FormData(form);
                 // check for filled Form and Regex --> if true add Product
-                if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData, "ID") == true) {
+                if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == true) {
                     const formParams = new URLSearchParams(formData);
                     const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                    if ((yield communication.addProductComm(usableData)) == true) {
+                    if ((yield ServerCommunication.addProductComm(usableData)) == true) {
                         response.innerText = "Product added";
                     }
                     else
                         response.innerText = "ID already in use. Retry with different ID";
                 }
-                else if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData, "ID") == false) {
+                else if (FormCheck.checkIfFormIsFilled(formData, 9) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == false) {
                     response.innerText = "ID must consist of three uppercase letters followed by three numbers.";
                 }
             });
@@ -71,7 +71,7 @@ export class Product {
                 if (FormCheck.checkIfFormIsFilled(formData, 1) == true) {
                     const formParams = new URLSearchParams(formData);
                     const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                    const foundProducts = JSON.parse((yield communication.searchProductComm(usableData)).replace(/%2B/g, " "));
+                    const foundProducts = JSON.parse((yield ServerCommunication.searchProductComm(usableData)).replace(/%2B/g, " "));
                     if (foundProducts.length == 0) {
                         response.innerText = "No product found";
                     }
@@ -129,7 +129,7 @@ export class Product {
                                                 const formParams = new URLSearchParams(formData);
                                                 const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                                                 usableData.id = foundProducts[x].id;
-                                                if ((yield communication.editProductComm(usableData)) == true) {
+                                                if ((yield ServerCommunication.editProductComm(usableData)) == true) {
                                                     response.innerText = "Product changed";
                                                 }
                                                 else

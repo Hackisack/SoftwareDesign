@@ -5,12 +5,14 @@ import { Order } from "./order.js";
 import { Product } from "./product.js";
 import { User } from "./user.js";
 
+const serverString: string = "https://softwaredesign2022.herokuapp.com/"; // local Server String  "http://localhost:8100"
+
 export class ServerCommunication {
   // check either for Login validity or for Admin privileges
-  async checkLoginOrAdminComm (usableData: LoginData): Promise<boolean> {
+  static async checkLoginOrAdminComm (usableData: LoginData): Promise<boolean> {
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -26,11 +28,11 @@ export class ServerCommunication {
   }
 
   // Add user
-  async addUserComm (usableData: User): Promise<boolean> {
+  static async addUserComm (usableData: User): Promise<boolean> {
     usableData.serverId = "CreateUser";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -46,13 +48,13 @@ export class ServerCommunication {
   }
 
   // Return all Admin Data
-  async allAdminDataComm (): Promise<string> {
+  static async allAdminDataComm (): Promise<string> {
     const serverId: ServerId = {
       serverId: "AllAdmin"
     };
     const fetchString: string = JSON.stringify(serverId);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -65,13 +67,13 @@ export class ServerCommunication {
   }
 
   // Return all Order Data
-  async allOrderDataComm (): Promise<string> {
+  static async allOrderDataComm (): Promise<string> {
     const serverId: ServerId = {
       serverId: "AllOrder"
     };
     const fetchString: string = JSON.stringify(serverId);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -84,14 +86,14 @@ export class ServerCommunication {
   }
 
   // Change Admin Privileges of User
-  async changeAdminPrivilegesComm (username: string): Promise<string> {
+  static async changeAdminPrivilegesComm (username: string): Promise<string> {
     const serverId: ChangeAdmin = {
       serverId: "ChangeAdmin",
       username: username
     };
     const fetchString: string = JSON.stringify(serverId);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -104,11 +106,11 @@ export class ServerCommunication {
   }
 
   // Add Product
-  async addProductComm (usableData: Product): Promise<boolean> {
+  static async addProductComm (usableData: Product): Promise<boolean> {
     usableData.serverId = "CreateProduct";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -124,11 +126,11 @@ export class ServerCommunication {
   }
 
   // Search Product
-  async searchProductComm (usableData: SearchTerm): Promise<string> {
+  static async searchProductComm (usableData: SearchTerm): Promise<string> {
     usableData.serverId = "SearchProduct";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -143,11 +145,11 @@ export class ServerCommunication {
   }
 
   // Edit Product
-  async editProductComm (usableData: Product): Promise<boolean> {
+  static async editProductComm (usableData: Product): Promise<boolean> {
     usableData.serverId = "EditProduct";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -162,11 +164,11 @@ export class ServerCommunication {
   }
 
   // Edit Order
-  async editOrderComm (usableData: Order): Promise<boolean> {
+  static async editOrderComm (usableData: Order): Promise<boolean> {
     usableData.serverId = "EditOrder";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -181,11 +183,11 @@ export class ServerCommunication {
   }
 
   // Edit Customer
-  async editCustomerComm (usableData: Customer): Promise<boolean> {
+  static async editCustomerComm (usableData: Customer): Promise<boolean> {
     usableData.serverId = "EditCustomer";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -200,11 +202,11 @@ export class ServerCommunication {
   }
 
   // Add Customer
-  async addCustomerComm (usableData: Customer): Promise<boolean> {
+  static async addCustomerComm (usableData: Customer): Promise<boolean> {
     usableData.serverId = "CreateCustomer";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -220,11 +222,11 @@ export class ServerCommunication {
   }
 
   // Search Customer
-  async searchCustomerComm (usableData: SearchTerm): Promise<string> {
+  static async searchCustomerComm (usableData: SearchTerm): Promise<string> {
     usableData.serverId = "SearchCustomer";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -239,11 +241,11 @@ export class ServerCommunication {
   }
 
   // Search Order
-  async searchOrderComm (usableData: SearchTerm): Promise<string> {
+  static async searchOrderComm (usableData: SearchTerm): Promise<string> {
     usableData.serverId = "SearchOrder";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -258,11 +260,11 @@ export class ServerCommunication {
   }
 
   // Create Order
-  async createOrderComm (usableData: Order): Promise<boolean> {
+  static async createOrderComm (usableData: Order): Promise<boolean> {
     usableData.serverId = "CreateOrder";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -278,13 +280,13 @@ export class ServerCommunication {
   }
 
   // Return all Products
-  async allProductDataComm (): Promise<string> {
+  static async allProductDataComm (): Promise<string> {
     const serverId: ServerId = {
       serverId: "AllProduct"
     };
     const fetchString: string = JSON.stringify(serverId);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -297,13 +299,13 @@ export class ServerCommunication {
   }
 
   // Return all Customers
-  async allCustomerDataComm (): Promise<string> {
+  static async allCustomerDataComm (): Promise<string> {
     const serverId: ServerId = {
       serverId: "AllCustomer"
     };
     const fetchString: string = JSON.stringify(serverId);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 
@@ -316,11 +318,11 @@ export class ServerCommunication {
   }
 
   // Check for duplicate Order Id
-  async checkForOrderId (usableData: SearchTerm): Promise<boolean> {
+  static async checkForOrderId (usableData: SearchTerm): Promise<boolean> {
     usableData.serverId = "CheckOrderId";
     const fetchString: string = JSON.stringify(usableData);
 
-    const response: Response = await fetch("http://localhost:8100", {
+    const response: Response = await fetch(serverString, {
 
       method: "POST",
 

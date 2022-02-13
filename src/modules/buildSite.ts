@@ -1,10 +1,10 @@
-// module imports
-import { communication } from "../app.js";
+// Module Imports
 import { Customer } from "./customer.js";
 import { loggedInPage } from "./htmlCodeStrings.js";
 import { LoginData } from "./interfaces.js";
 import { Order } from "./order.js";
 import { Product } from "./product.js";
+import { ServerCommunication } from "./serverCommunication.js";
 import { User } from "./user.js";
 
 // Grab HTML-Elements
@@ -20,7 +20,7 @@ export class BuildSite {
     reloadUsableData = usableData;
     usableData.serverId = "BuildSite";
 
-    if (await communication.checkLoginOrAdminComm(usableData) == true) {
+    if (await ServerCommunication.checkLoginOrAdminComm(usableData) == true) {
       adminPrivileges = true;
     }
     else adminPrivileges = false;
@@ -53,7 +53,7 @@ export class BuildSite {
     const bttnAddUser: HTMLButtonElement = <HTMLButtonElement>document.getElementById("addUser");
     const bttnAddProduct: HTMLButtonElement = <HTMLButtonElement>document.getElementById("addProduct");
 
-    //if Admin privileges are false --> disable Admin functionalities
+    // if Admin privileges are false --> disable Admin functionalities
     if (adminPrivileges == false) {
       bttnChangeAdmin.outerHTML = "";
       bttnAddProduct.outerHTML = "";
@@ -97,7 +97,7 @@ export class BuildSite {
       Order.searchOrder();
     });
     bttnAddOrder.addEventListener("click", function (): void {
-      Order.createOrder("one");
+      Order.createOrder("one"); // Design Pattern Factory
     });
     bttnSearchCustomer.addEventListener("click", function (): void {
       Customer.searchCustomer();

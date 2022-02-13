@@ -7,10 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { communication } from "../app.js";
+// Module Imports
 import { BuildSite } from "./buildSite.js";
 import { FormCheck } from "./formCheck.js";
 import { addUserPage, tableBodyUser, tableHeaderUser } from "./htmlCodeStrings.js";
+import { ServerCommunication } from "./serverCommunication.js";
 export class User {
     constructor(username, password, admin, serverId) {
         this.username = username;
@@ -34,16 +35,16 @@ export class User {
                 // Get User Input
                 const formData = new FormData(form);
                 // Ceck for filled Form and Regex --> if true add User
-                if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData, "usernameAndPassword") == true) {
+                if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData.get("username").toString(), "username") == true && FormCheck.checkForRegex(formData.get("password").toString(), "password") == true) {
                     const formParams = new URLSearchParams(formData);
                     const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                    if ((yield communication.addUserComm(usableData)) == true) {
+                    if ((yield ServerCommunication.addUserComm(usableData)) == true) {
                         response.innerText = "User added";
                     }
                     else
                         response.innerText = "Username already in use. Retry with different Username";
                 }
-                else if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData, "usernameAndPassword") == false) {
+                else if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData.get("username").toString(), "username") == false && FormCheck.checkForRegex(formData.get("password").toString(), "password") == false) {
                     response.innerText = "Invalid Username or Password. Username can only consist of alphabetical letters. Password must be between 4 and 8 digits long and include at least one numeric digit.";
                 }
             });
@@ -62,7 +63,7 @@ export class User {
             const privileges = document.getElementsByClassName("privileges");
             const changeButton = document.getElementsByClassName("changeButton");
             // Retrieve all Admin Data
-            const adminData = JSON.parse((yield communication.allAdminDataComm()).replace(/%2B/g, " "));
+            const adminData = JSON.parse((yield ServerCommunication.allAdminDataComm()).replace(/%2B/g, " "));
             // Build table entry for every User
             for (let x = 0; x < adminData.length; x++) {
                 table.innerHTML += tableBodyUser;
@@ -74,7 +75,7 @@ export class User {
                 changeButton[x].addEventListener("click", function () {
                     return __awaiter(this, void 0, void 0, function* () {
                         // change the Privileges --> If changed from true to false --> Reload the Buttons to disable Admin privileges
-                        if ((yield communication.changeAdminPrivilegesComm(adminData[x].username)) == "true") {
+                        if ((yield ServerCommunication.changeAdminPrivilegesComm(adminData[x].username)) == "true") {
                             User.changeAdmin(reloadUsableData);
                             BuildSite.startBuilding(reloadUsableData, "reload");
                         }

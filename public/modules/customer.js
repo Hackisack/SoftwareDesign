@@ -7,9 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { communication } from "../app.js";
+// Module Imports
 import { FormCheck } from "./formCheck.js";
 import { changeCustomer, createCustomer, editButton, searchCustomerForm, statisticButton, tableBodyCustomer, tableHeaderCustomer } from "./htmlCodeStrings.js";
+import { ServerCommunication } from "./serverCommunication.js";
 import { ShowStatistic } from "./showStatistic.js";
 export class Customer {
     constructor(id, name, adress, discount, serverId) {
@@ -34,16 +35,16 @@ export class Customer {
                 // get User Input Data
                 const formData = new FormData(form);
                 // check for filled Form fields and Regex --> if valid add Customer to Database
-                if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData, "ID") == true) {
+                if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == true) {
                     const formParams = new URLSearchParams(formData);
                     const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                    if ((yield communication.addCustomerComm(usableData)) == true) {
+                    if ((yield ServerCommunication.addCustomerComm(usableData)) == true) {
                         response.innerText = "Customer added";
                     }
                     else
                         response.innerText = "ID already in use. Retry with different ID";
                 }
-                else if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData, "ID") == false) {
+                else if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == false) {
                     response.innerText = "ID must consist of three uppercase letters followed by three numbers.";
                 }
             });
@@ -67,7 +68,7 @@ export class Customer {
                 if (FormCheck.checkIfFormIsFilled(formData, 1) == true) {
                     const formParams = new URLSearchParams(formData);
                     const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-                    const foundCustomers = JSON.parse((yield communication.searchCustomerComm(usableData)).replace(/%2B/g, " "));
+                    const foundCustomers = JSON.parse((yield ServerCommunication.searchCustomerComm(usableData)).replace(/%2B/g, " "));
                     if (foundCustomers.length == 0) {
                         response.innerText = "No Customer found";
                     }
@@ -115,7 +116,7 @@ export class Customer {
                                                 const formParams = new URLSearchParams(formData);
                                                 const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                                                 usableData.id = foundCustomers[x].id;
-                                                if ((yield communication.editCustomerComm(usableData)) == true) {
+                                                if ((yield ServerCommunication.editCustomerComm(usableData)) == true) {
                                                     response.innerText = "Customer changed";
                                                 }
                                                 else

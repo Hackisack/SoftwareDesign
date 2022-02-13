@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { communication } from "../app.js";
 import { FormCheck } from "./formCheck.js";
 import { changeOrderForm, createOrderForm, editButton, HeaderChangeOrder, HeaderConfirmOrder, searchOrderForm, tableBodyCreateOrder, tableBodyOrder, tableHeaderCreateOrder, tableHeaderOrder } from "./htmlCodeStrings.js";
+import { ServerCommunication } from "./serverCommunication.js";
 export class Order {
     constructor(id, customer, description, orderDate, deliveryDate, price, serverId, orderPositions) {
         this.id = id;
@@ -34,7 +34,7 @@ export class Order {
                 const customer = document.getElementById("customer");
                 const response = document.getElementById("response");
                 // Get all Customer Data
-                const allCustomer = JSON.parse((yield communication.allCustomerDataComm()).replace(/%2B/g, " "));
+                const allCustomer = JSON.parse((yield ServerCommunication.allCustomerDataComm()).replace(/%2B/g, " "));
                 // Create options to choose Customer
                 for (let x = 0; x < allCustomer.length; x++) {
                     customer.innerHTML += "<option value=" + x + "  >" + allCustomer[x].id + ",  " + allCustomer[x].name + "</option>";
@@ -49,7 +49,7 @@ export class Order {
                             serverId: ""
                         };
                         // check for filled Form, duplicate Id and Regex
-                        if (FormCheck.checkIfFormIsFilled(formData, 2) == true && (yield communication.checkForOrderId(usedId)) == true && FormCheck.checkForRegex(formData, "ID") == true) {
+                        if (FormCheck.checkIfFormIsFilled(formData, 2) == true && (yield ServerCommunication.checkForOrderId(usedId)) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == true) {
                             // create Order
                             const order = {
                                 id: "",
@@ -71,10 +71,10 @@ export class Order {
                             // call createOrder with the next step
                             Order.createOrder("two", order, allCustomer[customer.selectedIndex].name, allCustomer[customer.selectedIndex].discount);
                         }
-                        else if (FormCheck.checkIfFormIsFilled(formData, 2) == true && (yield communication.checkForOrderId(usedId)) == false) {
+                        else if (FormCheck.checkIfFormIsFilled(formData, 2) == true && (yield ServerCommunication.checkForOrderId(usedId)) == false) {
                             response.innerHTML = "ID already in use. Try with different.";
                         }
-                        else if (FormCheck.checkIfFormIsFilled(formData, 2) == true && FormCheck.checkForRegex(formData, "ID") == true) {
+                        else if (FormCheck.checkIfFormIsFilled(formData, 2) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == true) {
                             response.innerHTML = "ID must consist of three uppercase letters followed by three numbers.";
                         }
                     });
@@ -97,7 +97,7 @@ export class Order {
                     }
                 });
                 // Get all Produts
-                const productData = JSON.parse(yield communication.allProductDataComm());
+                const productData = JSON.parse(yield ServerCommunication.allProductDataComm());
                 // Grab HTML Elements after HTML insertion
                 const table = document.getElementById("table");
                 // Build table entrys for every Product
@@ -194,7 +194,7 @@ export class Order {
             return __awaiter(this, void 0, void 0, function* () {
                 // confirm changed or added Order
                 if (changeOrder == true) {
-                    if ((yield communication.editOrderComm(order)) == true) {
+                    if ((yield ServerCommunication.editOrderComm(order)) == true) {
                         changeSite.innerHTML = "Order changed";
                     }
                     else {
@@ -202,7 +202,7 @@ export class Order {
                     }
                 }
                 else {
-                    if ((yield communication.createOrderComm(order)) == true) {
+                    if ((yield ServerCommunication.createOrderComm(order)) == true) {
                         changeSite.innerHTML = "Order added";
                     }
                     else {
@@ -228,12 +228,14 @@ export class Order {
         orderDelDate.innerText = "Delivery Date: " + (order.deliveryDate.getMonth() + 1) + "." + order.deliveryDate.getDate().toString() + "." + order.deliveryDate.getFullYear().toString();
         // Calculate full price and subtract Discount if needed
         let fullPrice = 0;
+        let givenDiscount = 0;
         for (let x = 0; x < order.orderPositions.length; x++) {
             const price = +order.orderPositions[x][0].price;
             const amount = +order.orderPositions[x][1].amount;
             const discount = +order.orderPositions[x][0].discount;
             if (order.orderPositions[x][0].discountBG <= order.orderPositions[x][1].amount) {
                 fullPrice += (price * amount);
+                givenDiscount += fullPrice * (discount / 100);
                 fullPrice = fullPrice - (fullPrice * (discount / 100));
             }
             else {
@@ -242,7 +244,10 @@ export class Order {
             ;
         }
         order.price = fullPrice - (fullPrice * (customerDiscount / 100));
-        orderPrice.innerText = "Price: " + order.price.toString() + "€";
+        console.log(givenDiscount);
+        givenDiscount += fullPrice * (customerDiscount / 100);
+        console.log(givenDiscount);
+        orderPrice.innerText = "Price: " + order.price.toString() + "€. " + "Discount: " + givenDiscount + "€.";
         // Display Description and ordered Amount for every Position
         for (let x = 0; x < order.orderPositions.length; x++) {
             orderPositions.innerText += "Description: " + order.orderPositions[x][0].description + "," + " Amount: " + order.orderPositions[x][1].amount;
@@ -270,8 +275,8 @@ export class Order {
                     const formParams = new URLSearchParams(formData);
                     const usableData = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                     // retrieve the found Orders and all Customers to display information
-                    const foundOrders = JSON.parse((yield communication.searchOrderComm(usableData)).replace(/%2B/g, " "));
-                    const allCustomer = JSON.parse((yield communication.allCustomerDataComm()).replace(/%2B/g, " "));
+                    const foundOrders = JSON.parse((yield ServerCommunication.searchOrderComm(usableData)).replace(/%2B/g, " "));
+                    const allCustomer = JSON.parse((yield ServerCommunication.allCustomerDataComm()).replace(/%2B/g, " "));
                     if (foundOrders.length == 0) {
                         response.innerText = "No Order found";
                     }
@@ -350,7 +355,7 @@ export class Order {
                 const submit = document.getElementById("submit");
                 const customer = document.getElementById("customer");
                 // retrieve all Customers
-                const allCustomer = JSON.parse((yield communication.allCustomerDataComm()).replace(/%2B/g, " "));
+                const allCustomer = JSON.parse((yield ServerCommunication.allCustomerDataComm()).replace(/%2B/g, " "));
                 // Generate options to choose Customer
                 for (let x = 0; x < allCustomer.length; x++) {
                     customer.innerHTML += "<option value=" + x + "  >" + allCustomer[x].id + ",  " + allCustomer[x].name + "</option>";
@@ -400,7 +405,7 @@ export class Order {
                     }
                 });
                 // Get all Products
-                const productData = JSON.parse(yield communication.allProductDataComm());
+                const productData = JSON.parse(yield ServerCommunication.allProductDataComm());
                 // Grab HTML Elements after HTML insertion
                 const table = document.getElementById("table");
                 // Build table entry for every Product

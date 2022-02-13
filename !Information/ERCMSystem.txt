@@ -69,9 +69,6 @@ https://de.wikipedia.org/wiki/ABC-Analyse
 
 
 !!!!!!!!!!!!!! 
-5. design patterns
-6. unit test
-7. Kommentieren
-8. MEDate check fixxen
-
---> Code aufräumen
+5. design patterns 1. Iterator (value of formData) 2. Fabric (Dont build Object with new Constructor. Instead e.g. call Order.createOrder())
+7. Diagramme
+8. Readme

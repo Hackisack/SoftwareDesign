@@ -7,12 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// module imports
-import { communication } from "../app.js";
+// Module Imports
 import { Customer } from "./customer.js";
 import { loggedInPage } from "./htmlCodeStrings.js";
 import { Order } from "./order.js";
 import { Product } from "./product.js";
+import { ServerCommunication } from "./serverCommunication.js";
 import { User } from "./user.js";
 // Grab HTML-Elements
 const body = document.getElementById("body");
@@ -25,7 +25,7 @@ export class BuildSite {
         return __awaiter(this, void 0, void 0, function* () {
             reloadUsableData = usableData;
             usableData.serverId = "BuildSite";
-            if ((yield communication.checkLoginOrAdminComm(usableData)) == true) {
+            if ((yield ServerCommunication.checkLoginOrAdminComm(usableData)) == true) {
                 adminPrivileges = true;
             }
             else
@@ -53,7 +53,7 @@ export class BuildSite {
         const bttnChangeAdmin = document.getElementById("changeAdmin");
         const bttnAddUser = document.getElementById("addUser");
         const bttnAddProduct = document.getElementById("addProduct");
-        //if Admin privileges are false --> disable Admin functionalities
+        // if Admin privileges are false --> disable Admin functionalities
         if (adminPrivileges == false) {
             bttnChangeAdmin.outerHTML = "";
             bttnAddProduct.outerHTML = "";
@@ -93,7 +93,7 @@ export class BuildSite {
             Order.searchOrder();
         });
         bttnAddOrder.addEventListener("click", function () {
-            Order.createOrder("one");
+            Order.createOrder("one"); // Design Pattern Factory
         });
         bttnSearchCustomer.addEventListener("click", function () {
             Customer.searchCustomer();

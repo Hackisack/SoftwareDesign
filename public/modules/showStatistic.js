@@ -7,15 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { communication } from "../app.js";
 import { statisticProduct } from "./htmlCodeStrings.js";
+import { ServerCommunication } from "./serverCommunication.js";
 export class ShowStatistic {
     // Show Statistics for Product or Customer
     static showStatistic(statisticObject, usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             const changeSite = document.getElementById("changeSite");
-            const allOrders = JSON.parse(yield communication.allOrderDataComm());
-            const allCustomers = JSON.parse(yield communication.allCustomerDataComm());
+            const allOrders = JSON.parse(yield ServerCommunication.allOrderDataComm());
+            const allCustomers = JSON.parse(yield ServerCommunication.allCustomerDataComm());
             // Product
             if (statisticObject == "product") {
                 // Parse again to clarify Type

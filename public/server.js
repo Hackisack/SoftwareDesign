@@ -21,7 +21,7 @@ if (!port) {
     port = 8100;
 }
 // Database Connectionstring
-const databaseUrl = "mongodb+srv://test-user:hhtkDpO0wsSZ4V4Q@giswise2020.wgtcu.mongodb.net/Data?retryWrites=true&w=majority";
+const databaseUrl = "mongodb+srv://test-user:hhtkDpO0wsSZ4V4Q@giswise2020.wgtcu.mongodb.net/Data?retryWrites=true&w=majority"; // local Database: mongodb://127.0.0.1:27017
 startServer(port);
 connectToDatabase(databaseUrl);
 // start Server and display Port

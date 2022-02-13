@@ -1,7 +1,8 @@
-import { communication } from "../app.js";
+// Module Imports
 import { FormCheck } from "./formCheck.js";
 import { changeCustomer, createCustomer, editButton, searchCustomerForm, statisticButton, tableBodyCustomer, tableHeaderCustomer } from "./htmlCodeStrings.js";
 import { SearchTerm } from "./interfaces.js";
+import { ServerCommunication } from "./serverCommunication.js";
 import { ShowStatistic } from "./showStatistic.js";
 
 export class Customer {
@@ -37,16 +38,16 @@ export class Customer {
       const formData: FormData = new FormData(form);
 
       // check for filled Form fields and Regex --> if valid add Customer to Database
-      if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData, "ID") == true) {
+      if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == true) {
         const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
         const usableData: Customer = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
 
-        if (await communication.addCustomerComm(usableData) == true) {
+        if (await ServerCommunication.addCustomerComm(usableData) == true) {
           response.innerText = "Customer added";
         }
         else response.innerText = "ID already in use. Retry with different ID";
       }
-      else if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData, "ID") == false) {
+      else if (FormCheck.checkIfFormIsFilled(formData, 4) == true && FormCheck.checkForRegex(formData.get("id").toString(), "id") == false) {
         response.innerText = "ID must consist of three uppercase letters followed by three numbers.";
       }
     });
@@ -71,7 +72,7 @@ export class Customer {
       if (FormCheck.checkIfFormIsFilled(formData, 1) == true) {
         const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
         const usableData: SearchTerm = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
-        const foundCustomers: Customer[] = JSON.parse((await communication.searchCustomerComm(usableData)).replace(/%2B/g, " "));
+        const foundCustomers: Customer[] = JSON.parse((await ServerCommunication.searchCustomerComm(usableData)).replace(/%2B/g, " "));
 
         if (foundCustomers.length == 0) {
           response.innerText = "No Customer found";
@@ -127,7 +128,7 @@ export class Customer {
                   const usableData: Customer = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
                   usableData.id = foundCustomers[x].id;
 
-                  if (await communication.editCustomerComm(usableData) == true) {
+                  if (await ServerCommunication.editCustomerComm(usableData) == true) {
                     response.innerText = "Customer changed";
                   }
                   else response.innerText = "Something went wrong. Try again.";

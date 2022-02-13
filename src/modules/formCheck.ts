@@ -1,3 +1,4 @@
+// Module Imports
 import { Amount } from "./interfaces.js";
 import { Product } from "./product.js";
 
@@ -6,6 +7,7 @@ export class FormCheck {
   static checkIfFormIsFilled (formData: FormData, length: number): boolean {
     let formFilled:number = 0;
 
+    // Design Pattern Iterator
     for (const entry of formData.values()) {
       if (entry != "") {
         formFilled++;
@@ -29,18 +31,24 @@ export class FormCheck {
   }
 
   // check if entered data fits the Regex
-  static checkForRegex (formData: FormData, checkFor: string): boolean {
-    if (checkFor == "usernameAndPassword") {
+  static checkForRegex (checkString: string, checkFor: string): boolean {
+    if (checkFor == "username") {
       const regExUser: RegExp = /^[A-Za-z]+$/;
-      const regExPassword: RegExp = /^(?=.*\d).{4,8}$/;
-      if (regExUser.test(formData.get("username").toString()) == true && regExPassword.test(formData.get("password").toString()) == true) {
+      if (regExUser.test(checkString) == true) {
         return true;
       };
     }
 
-    if (checkFor == "ID") {
+    if (checkFor == "password") {
+      const regExPassword: RegExp = /^(?=.*\d).{4,8}$/;
+      if (regExPassword.test(checkString) == true) {
+        return true;
+      };
+    }
+
+    if (checkFor == "id") {
       const regEx: RegExp = /[A-Z]{3}[1-9]{3}/;
-      if (regEx.test(formData.get("id").toString()) == true) {
+      if (regEx.test(checkString) == true) {
         return true;
       };
     }

@@ -1,8 +1,9 @@
-import { communication } from "../app.js";
+// Module Imports
 import { BuildSite } from "./buildSite.js";
 import { FormCheck } from "./formCheck.js";
 import { addUserPage, tableBodyUser, tableHeaderUser } from "./htmlCodeStrings.js";
 import { AdminData, LoginData } from "./interfaces.js";
+import { ServerCommunication } from "./serverCommunication.js";
 
 export class User {
   username: string;
@@ -35,16 +36,16 @@ export class User {
       // Get User Input
       const formData: FormData = new FormData(form);
       // Ceck for filled Form and Regex --> if true add User
-      if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData, "usernameAndPassword") == true) {
+      if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData.get("username").toString(), "username") == true && FormCheck.checkForRegex(formData.get("password").toString(), "password") == true) {
         const formParams: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
         const usableData: User = JSON.parse("{\"" + decodeURI(formParams.toString().replace(/&/g, "\",\"").replace(/=/g, "\":\"")) + "\"}");
 
-        if (await communication.addUserComm(usableData) == true) {
+        if (await ServerCommunication.addUserComm(usableData) == true) {
           response.innerText = "User added";
         }
         else response.innerText = "Username already in use. Retry with different Username";
       }
-      else if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData, "usernameAndPassword") == false) {
+      else if (FormCheck.checkIfFormIsFilled(formData, 3) == true && FormCheck.checkForRegex(formData.get("username").toString(), "username") == false && FormCheck.checkForRegex(formData.get("password").toString(), "password") == false) {
         response.innerText = "Invalid Username or Password. Username can only consist of alphabetical letters. Password must be between 4 and 8 digits long and include at least one numeric digit.";
       }
     });
@@ -65,7 +66,7 @@ export class User {
     const changeButton: HTMLCollection = document.getElementsByClassName("changeButton");
 
     // Retrieve all Admin Data
-    const adminData: AdminData[] = JSON.parse((await communication.allAdminDataComm()).replace(/%2B/g, " "));
+    const adminData: AdminData[] = JSON.parse((await ServerCommunication.allAdminDataComm()).replace(/%2B/g, " "));
 
     // Build table entry for every User
     for (let x: number = 0; x < adminData.length; x++) {
@@ -79,7 +80,7 @@ export class User {
     for (let x: number = 0; x < adminData.length; x++) {
       changeButton[x].addEventListener("click", async function (): Promise<void> {
         // change the Privileges --> If changed from true to false --> Reload the Buttons to disable Admin privileges
-        if (await communication.changeAdminPrivilegesComm(adminData[x].username) == "true") {
+        if (await ServerCommunication.changeAdminPrivilegesComm(adminData[x].username) == "true") {
           User.changeAdmin(reloadUsableData);
           BuildSite.startBuilding(reloadUsableData, "reload");
         }

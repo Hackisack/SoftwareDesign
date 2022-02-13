@@ -1,15 +1,16 @@
-import { communication } from "../app.js";
+// Module Imports
 import { Customer } from "./customer.js";
 import { statisticProduct } from "./htmlCodeStrings.js";
 import { Order } from "./order.js";
 import { Product } from "./product.js";
+import { ServerCommunication } from "./serverCommunication.js";
 
 export class ShowStatistic {
   // Show Statistics for Product or Customer
   static async showStatistic (statisticObject: string, usableData: Product|Customer): Promise<void> {
     const changeSite: HTMLDivElement = <HTMLDivElement>document.getElementById("changeSite");
-    const allOrders: Order[] = JSON.parse(await communication.allOrderDataComm());
-    const allCustomers: Customer[] = JSON.parse(await communication.allCustomerDataComm());
+    const allOrders: Order[] = JSON.parse(await ServerCommunication.allOrderDataComm());
+    const allCustomers: Customer[] = JSON.parse(await ServerCommunication.allCustomerDataComm());
 
     // Product
     if (statisticObject == "product") {

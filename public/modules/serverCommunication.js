@@ -7,12 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+const serverString = "https://softwaredesign2022.herokuapp.com/"; // local Server String  "http://localhost:8100"
 export class ServerCommunication {
     // check either for Login validity or for Admin privileges
-    checkLoginOrAdminComm(usableData) {
+    static checkLoginOrAdminComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -25,11 +26,11 @@ export class ServerCommunication {
         });
     }
     // Add user
-    addUserComm(usableData) {
+    static addUserComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "CreateUser";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -42,13 +43,13 @@ export class ServerCommunication {
         });
     }
     // Return all Admin Data
-    allAdminDataComm() {
+    static allAdminDataComm() {
         return __awaiter(this, void 0, void 0, function* () {
             const serverId = {
                 serverId: "AllAdmin"
             };
             const fetchString = JSON.stringify(serverId);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -57,13 +58,13 @@ export class ServerCommunication {
         });
     }
     // Return all Order Data
-    allOrderDataComm() {
+    static allOrderDataComm() {
         return __awaiter(this, void 0, void 0, function* () {
             const serverId = {
                 serverId: "AllOrder"
             };
             const fetchString = JSON.stringify(serverId);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -72,14 +73,14 @@ export class ServerCommunication {
         });
     }
     // Change Admin Privileges of User
-    changeAdminPrivilegesComm(username) {
+    static changeAdminPrivilegesComm(username) {
         return __awaiter(this, void 0, void 0, function* () {
             const serverId = {
                 serverId: "ChangeAdmin",
                 username: username
             };
             const fetchString = JSON.stringify(serverId);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -88,11 +89,11 @@ export class ServerCommunication {
         });
     }
     // Add Product
-    addProductComm(usableData) {
+    static addProductComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "CreateProduct";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -105,11 +106,11 @@ export class ServerCommunication {
         });
     }
     // Search Product
-    searchProductComm(usableData) {
+    static searchProductComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "SearchProduct";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -122,11 +123,11 @@ export class ServerCommunication {
         });
     }
     // Edit Product
-    editProductComm(usableData) {
+    static editProductComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "EditProduct";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -139,11 +140,11 @@ export class ServerCommunication {
         });
     }
     // Edit Order
-    editOrderComm(usableData) {
+    static editOrderComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "EditOrder";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -156,11 +157,11 @@ export class ServerCommunication {
         });
     }
     // Edit Customer
-    editCustomerComm(usableData) {
+    static editCustomerComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "EditCustomer";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -173,11 +174,11 @@ export class ServerCommunication {
         });
     }
     // Add Customer
-    addCustomerComm(usableData) {
+    static addCustomerComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "CreateCustomer";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -190,11 +191,11 @@ export class ServerCommunication {
         });
     }
     // Search Customer
-    searchCustomerComm(usableData) {
+    static searchCustomerComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "SearchCustomer";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -207,11 +208,11 @@ export class ServerCommunication {
         });
     }
     // Search Order
-    searchOrderComm(usableData) {
+    static searchOrderComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "SearchOrder";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -224,11 +225,11 @@ export class ServerCommunication {
         });
     }
     // Create Order
-    createOrderComm(usableData) {
+    static createOrderComm(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "CreateOrder";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -241,13 +242,13 @@ export class ServerCommunication {
         });
     }
     // Return all Products
-    allProductDataComm() {
+    static allProductDataComm() {
         return __awaiter(this, void 0, void 0, function* () {
             const serverId = {
                 serverId: "AllProduct"
             };
             const fetchString = JSON.stringify(serverId);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -256,13 +257,13 @@ export class ServerCommunication {
         });
     }
     // Return all Customers
-    allCustomerDataComm() {
+    static allCustomerDataComm() {
         return __awaiter(this, void 0, void 0, function* () {
             const serverId = {
                 serverId: "AllCustomer"
             };
             const fetchString = JSON.stringify(serverId);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
@@ -271,11 +272,11 @@ export class ServerCommunication {
         });
     }
     // Check for duplicate Order Id
-    checkForOrderId(usableData) {
+    static checkForOrderId(usableData) {
         return __awaiter(this, void 0, void 0, function* () {
             usableData.serverId = "CheckOrderId";
             const fetchString = JSON.stringify(usableData);
-            const response = yield fetch("http://localhost:8100", {
+            const response = yield fetch(serverString, {
                 method: "POST",
                 body: fetchString
             });
